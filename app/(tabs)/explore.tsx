@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useMemo, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Avatar } from '@/components/Avatar';
 import { Colors, Spacing } from '@/constants/theme';
@@ -23,7 +24,7 @@ const SIZE = (Dimensions.get('window').width - GAP * (COL - 1)) / COL;
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
   const [q, setQ] = useState('');
-  const posts = useHaruStore((s) => s.exploreFeed());
+  const posts = useHaruStore(useShallow((s) => s.exploreFeed()));
   const users = useHaruStore((s) => s.users);
   const me = useHaruStore((s) => s.currentUserId);
   const isFollowing = useHaruStore((s) => s.isFollowing);

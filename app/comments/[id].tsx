@@ -11,6 +11,8 @@ import {
   View,
 } from 'react-native';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import { Avatar } from '@/components/Avatar';
 import { PostCard } from '@/components/PostCard';
 import { Colors, Spacing } from '@/constants/theme';
@@ -20,7 +22,7 @@ import { useHaruStore } from '@/lib/store';
 export default function CommentsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const post = useHaruStore((s) => s.posts.find((p) => p.id === id));
-  const comments = useHaruStore((s) => s.commentsFor(id));
+  const comments = useHaruStore(useShallow((s) => s.commentsFor(id)));
   const userById = useHaruStore((s) => s.userById);
   const addComment = useHaruStore((s) => s.addComment);
   const [text, setText] = useState('');

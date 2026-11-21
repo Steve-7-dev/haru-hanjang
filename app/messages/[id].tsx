@@ -11,6 +11,8 @@ import {
   View,
 } from 'react-native';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import { Colors, Spacing } from '@/constants/theme';
 import { formatKstRelative } from '@/lib/kst';
 import { useHaruStore } from '@/lib/store';
@@ -19,7 +21,7 @@ export default function ConversationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const me = useHaruStore((s) => s.currentUserId);
   const conv = useHaruStore((s) => s.conversations.find((c) => c.id === id));
-  const messages = useHaruStore((s) => s.messagesFor(id));
+  const messages = useHaruStore(useShallow((s) => s.messagesFor(id)));
   const userById = useHaruStore((s) => s.userById);
   const sendMessage = useHaruStore((s) => s.sendMessage);
   const [text, setText] = useState('');

@@ -9,6 +9,8 @@ import {
   View,
 } from 'react-native';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import { Avatar } from '@/components/Avatar';
 import { Colors, Spacing } from '@/constants/theme';
 import { useHaruStore } from '@/lib/store';
@@ -22,7 +24,7 @@ export default function UserProfileScreen() {
   const user = useHaruStore((s) => s.userById(id));
   const me = useHaruStore((s) => s.currentUserId);
   const canView = useHaruStore((s) => s.canViewUser(id));
-  const posts = useHaruStore((s) => s.postsByUser(id));
+  const posts = useHaruStore(useShallow((s) => s.postsByUser(id)));
   const followers = useHaruStore((s) => s.followerCount(id));
   const following = useHaruStore((s) => s.followingCount(id));
   const isFollowing = useHaruStore((s) => s.isFollowing(id));

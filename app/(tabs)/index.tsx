@@ -3,6 +3,8 @@ import { router } from 'expo-router';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import { Logo } from '@/components/Logo';
 import { PostCard } from '@/components/PostCard';
 import { Colors, Spacing } from '@/constants/theme';
@@ -10,7 +12,7 @@ import { useHaruStore } from '@/lib/store';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const posts = useHaruStore((s) => s.homeFeed());
+  const posts = useHaruStore(useShallow((s) => s.homeFeed()));
   const unread = useHaruStore(
     (s) => s.notificationsForMe().filter((n) => !n.read).length,
   );

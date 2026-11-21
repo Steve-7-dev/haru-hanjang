@@ -2,6 +2,8 @@ import { router } from 'expo-router';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import { Avatar } from '@/components/Avatar';
 import { Colors, Spacing } from '@/constants/theme';
 import { formatKstRelative } from '@/lib/kst';
@@ -10,7 +12,7 @@ import { useHaruStore } from '@/lib/store';
 export default function MessagesScreen() {
   const insets = useSafeAreaInsets();
   const me = useHaruStore((s) => s.currentUserId);
-  const conversations = useHaruStore((s) => s.myConversations());
+  const conversations = useHaruStore(useShallow((s) => s.myConversations()));
   const userById = useHaruStore((s) => s.userById);
   const messagesFor = useHaruStore((s) => s.messagesFor);
 

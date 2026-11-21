@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import { Avatar } from '@/components/Avatar';
 import { Colors, Spacing } from '@/constants/theme';
 import { useHaruStore } from '@/lib/store';
@@ -18,11 +20,14 @@ import { useHaruStore } from '@/lib/store';
 const COL = 3;
 const GAP = 2;
 const SIZE = (Dimensions.get('window').width - GAP * (COL - 1)) / COL;
+const EMPTY_POSTS: never[] = [];
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const me = useHaruStore((s) => s.me());
-  const posts = useHaruStore((s) => (me ? s.postsByUser(me.id) : []));
+  const posts = useHaruStore(
+    useShallow((s) => (me ? s.postsByUser(me.id) : EMPTY_POSTS)),
+  );
   const followers = useHaruStore((s) => (me ? s.followerCount(me.id) : 0));
   const following = useHaruStore((s) => (me ? s.followingCount(me.id) : 0));
   const today = useHaruStore((s) => (me ? s.todayPostFor(me.id) : undefined));

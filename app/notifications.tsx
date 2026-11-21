@@ -2,13 +2,15 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import { Avatar } from '@/components/Avatar';
 import { Colors, Spacing } from '@/constants/theme';
 import { formatKstRelative } from '@/lib/kst';
 import { useHaruStore } from '@/lib/store';
 
 export default function NotificationsScreen() {
-  const items = useHaruStore((s) => s.notificationsForMe());
+  const items = useHaruStore(useShallow((s) => s.notificationsForMe()));
   const userById = useHaruStore((s) => s.userById);
   const markNotificationsRead = useHaruStore((s) => s.markNotificationsRead);
 

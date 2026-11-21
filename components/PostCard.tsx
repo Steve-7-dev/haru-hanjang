@@ -10,6 +10,8 @@ import {
   View,
 } from 'react-native';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import { Colors, Spacing } from '@/constants/theme';
 import { formatKstRelative } from '@/lib/kst';
 import { useHaruStore } from '@/lib/store';
@@ -25,7 +27,7 @@ export function PostCard({ post }: Props) {
   const author = useHaruStore((s) => s.userById(post.authorId));
   const likesCount = useHaruStore((s) => s.likesCount(post.id));
   const liked = useHaruStore((s) => s.likedByMe(post.id));
-  const comments = useHaruStore((s) => s.commentsFor(post.id));
+  const comments = useHaruStore(useShallow((s) => s.commentsFor(post.id)));
   const toggleLike = useHaruStore((s) => s.toggleLike);
   const [heartBurst, setHeartBurst] = useState(false);
 
