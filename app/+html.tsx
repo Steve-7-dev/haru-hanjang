@@ -1,6 +1,8 @@
 import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
+import { PRETENDARD_WEB_CSS } from '@/constants/pretendardWebCss';
+
 // Web-only root HTML for static rendering (SDK 58+).
 // headNodes / bodyNodes inject styles and JS bundles — omitting them yields a blank page.
 export default function Root({ children }: PropsWithChildren) {
@@ -20,8 +22,22 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="apple-mobile-web-app-title" content="OneDayOneShot" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link
+          rel="preload"
+          href="/fonts/Pretendard-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/Pretendard-Bold.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <ScrollViewStyleReset />
-        <style dangerouslySetInnerHTML={{ __html: rootCss }} />
+        <style dangerouslySetInnerHTML={{ __html: `${PRETENDARD_WEB_CSS}\n${responsiveBackground}` }} />
         {headNodes}
       </head>
       <body {...bodyAttributes}>
@@ -32,38 +48,7 @@ export default function Root({ children }: PropsWithChildren) {
   );
 }
 
-const rootCss = `
-@font-face {
-  font-family: 'Pretendard';
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Pretendard';
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/Pretendard-Medium.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Pretendard';
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Pretendard';
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
-}
-html, body, #root {
-  font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
-}
+const responsiveBackground = `
 body {
   background-color: #fff;
 }
