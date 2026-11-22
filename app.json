@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "하루한장",
+    "name": "One Day One Shot",
     "slug": "haru-hanjang",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -30,14 +30,25 @@
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png",
-      "name": "하루한장",
-      "shortName": "하루한장",
+      "name": "One Day One Shot",
+      "shortName": "OneDayOneShot",
       "themeColor": "#ffffff",
       "backgroundColor": "#ffffff",
       "display": "standalone"
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Pretendard-Regular.otf",
+            "./assets/fonts/Pretendard-Medium.otf",
+            "./assets/fonts/Pretendard-SemiBold.otf",
+            "./assets/fonts/Pretendard-Bold.otf"
+          ]
+        }
+      ],
       "expo-image",
       "expo-secure-store",
       [

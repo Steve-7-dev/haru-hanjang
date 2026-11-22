@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const root = process.cwd();
@@ -15,7 +15,18 @@ if (!existsSync(srcDir)) {
 }
 
 mkdirSync(destDir, { recursive: true });
+
 for (const name of ['manifest.json', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) {
   cpSync(join(srcDir, name), join(destDir, name));
 }
-console.log('Copied PWA assets into dist/');
+
+const fontsSrc = join(srcDir, 'fonts');
+const fontsDest = join(destDir, 'fonts');
+if (existsSync(fontsSrc) && statSync(fontsSrc).isDirectory()) {
+  mkdirSync(fontsDest, { recursive: true });
+  for (const file of readdirSync(fontsSrc)) {
+    cpSync(join(fontsSrc, file), join(fontsDest, file));
+  }
+}
+
+console.log('Copied PWA assets + fonts into dist/');

@@ -1,7 +1,7 @@
 {
-  "name": "하루한장",
-  "short_name": "하루한장",
-  "description": "한국시간 기준 하루 한 장",
+  "name": "One Day One Shot",
+  "short_name": "OneDayOneShot",
+  "description": "One photo a day (KST)",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

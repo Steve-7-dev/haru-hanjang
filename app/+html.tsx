@@ -10,17 +10,18 @@ export default function Root({ children }: PropsWithChildren) {
     <html lang="ko" {...htmlAttributes}>
       <head>
         <meta charSet="utf-8" />
+        <title>One Day One Shot</title>
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="하루한장" />
+        <meta name="apple-mobile-web-app-title" content="OneDayOneShot" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <ScrollViewStyleReset />
-        <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
+        <style dangerouslySetInnerHTML={{ __html: rootCss }} />
         {headNodes}
       </head>
       <body {...bodyAttributes}>
@@ -31,7 +32,38 @@ export default function Root({ children }: PropsWithChildren) {
   );
 }
 
-const responsiveBackground = `
+const rootCss = `
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
+}
+html, body, #root {
+  font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+}
 body {
   background-color: #fff;
 }

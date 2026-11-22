@@ -1,4 +1,6 @@
-/** Instagram-homage visual tokens for 하루한장 */
+import { FontFamily } from '@/constants/fonts';
+
+/** Instagram-homage visual tokens for One Day One Shot */
 export const Colors = {
   background: '#FFFFFF',
   backgroundMuted: '#FAFAFA',
@@ -34,25 +36,30 @@ export const Spacing = {
 
 export const Typography = {
   logo: {
+    fontFamily: FontFamily.sans,
     fontSize: 28,
     fontWeight: '700' as const,
     letterSpacing: -0.5,
   },
   username: {
+    fontFamily: FontFamily.sans,
     fontSize: 14,
     fontWeight: '600' as const,
   },
   body: {
+    fontFamily: FontFamily.sans,
     fontSize: 14,
     fontWeight: '400' as const,
     lineHeight: 18,
   },
   caption: {
+    fontFamily: FontFamily.sans,
     fontSize: 12,
     fontWeight: '400' as const,
     color: Colors.textSecondary,
   },
   button: {
+    fontFamily: FontFamily.sans,
     fontSize: 14,
     fontWeight: '600' as const,
   },
