@@ -5,7 +5,7 @@ type Props = { size?: number };
 
 /**
  * Original One Day One Shot mark: rounded square, six diagonal color bands,
- * white shutter ring + “1”. Not an Instagram logo/glyph/gradient copy.
+ * cute flat-vector camera with sunglasses. Not an Instagram logo/glyph copy.
  */
 export function BrandMark({ size = 72 }: Props) {
   return (
