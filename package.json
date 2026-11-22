@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.17",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "date-fns": "^4.4.0",
@@ -22,6 +23,8 @@
     "expo-status-bar": "~58.0.5",
     "expo-symbols": "~58.0.5",
     "expo-web-browser": "~58.1.0",
+    "next": "^15.5.29",
+    "pg": "^8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.88.1",
@@ -34,19 +37,24 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@types/pg": "^8.23.1",
     "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "expo start",
+    "start": "next start -p 3000",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build": "expo export --platform web && node scripts/copy-pwa-assets.mjs && rm -rf public && mv dist public",
+    "build": "next build && node scripts/migrate.mjs",
     "serve:web": "npx --yes serve public",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "dev": "next dev -p 3000",
+    "expo:start": "expo start",
+    "build:expo-web": "expo export --platform web && node scripts/copy-pwa-assets.mjs && rm -rf public-expo && mv dist public-expo",
+    "typecheck": "tsc -p tsconfig.next.json --noEmit"
   },
   "private": true
 }
