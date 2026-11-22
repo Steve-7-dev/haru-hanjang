@@ -44,7 +44,7 @@ export default function LoginScreen() {
     >
       <View style={styles.card}>
         <Logo size="lg" />
-        <Text style={styles.tagline}>하루, 한 장.</Text>
+        <Text style={styles.tagline}>One photo a day.</Text>
 
         <TextInput
           style={styles.input}

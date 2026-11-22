@@ -103,7 +103,7 @@ export const SEED: AppData = {
     },
     {
       id: 'cv_group',
-      title: '하루한장 친구들',
+      title: 'One Day One Shot friends',
       isGroup: true,
       memberIds: ['u_mina', 'u_jun', 'u_soo'],
       createdAt: iso(60 * 48),

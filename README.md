@@ -1,19 +1,22 @@
-# 하루한장
+# One Day One Shot
 
-Instagram 오마주 iOS SNS — **한국시간(KST) 기준 하루 한 장**.
+Instagram-homage iOS SNS — **one photo a day (KST)**.
 
-너무 많은 콘텐츠 대신, 하루의 가장 소중한 순간 하나만 남깁니다.
+Repo / package folder remains `haru-hanjang`. Live private URL is unchanged:
+https://haru-hanjang.apps.grok.bot
 
-## MVP 기능
+Too much content is the enemy — keep only the one moment that mattered today.
 
-- 이메일 가입/로그인 (Google / 카카오 / Apple는 **의도적으로 비활성 스텁** — 키 연결 전)
-- 팔로우 피드 + 전체(공개) 탐색
-- 팔로우 즉시 적용, 비공개 계정
-- 게시물당 **사진 1장**, 같은 날 수정/삭제 가능
-- 좋아요 · 댓글 · DM(1:1 + 그룹)
-- 푸시 권한/토큰 등록 훅 (EAS projectId 필요)
+## MVP features
 
-## 실행
+- Email sign-up / login (Google / Kakao / Apple are **intentionally disabled stubs** until keys are wired)
+- Follow feed + public explore
+- Instant follow, private accounts
+- **One photo per post**, editable/deletable the same day
+- Likes · comments · DM (1:1 + group)
+- Push permission / token registration hook (needs EAS projectId)
+
+## Run
 
 ```bash
 cd haru-hanjang
@@ -21,30 +24,34 @@ npm install
 npx expo start
 ```
 
-- iOS: Expo Go 또는 `npx expo run:ios` (Mac + Xcode)
-- 웹 미리보기: `npx expo start --web` 또는 `npm run build && npm run serve:web`
+- iOS: Expo Go or `npx expo run:ios` (Mac + Xcode)
+- Web preview: `npx expo start --web` or `npm run build && npm run serve:web`
 
-### 계정
+### Accounts
 
-시드 페르소나는 **샘플 콘텐츠용**이며 로그인 비밀번호가 없습니다.  
-앱에서 **가입하기**로 새 이메일 계정을 만든 뒤 로그인하세요.  
-비밀번호는 기기 내 SecureStore에 PBKDF2 다이제스트로만 저장됩니다.
+Seed personas are **sample content only** and have no login passwords.  
+Use **Sign up** in the app to create an email account, then log in.  
+Passwords are stored only as PBKDF2 digests in on-device SecureStore (web falls back to localStorage).
 
-## OAuth / 푸시 다음 단계
+## Typography
 
-1. [Expo Apple / Google auth](https://docs.expo.dev/) 및 카카오 SDK 키를 연결
-2. `app.json` → `extra.eas.projectId` 설정 후 EAS Build
-3. 멀티 디바이스 동기화가 필요하면 서버(API + DB)로 `lib/store` persistence를 교체
+UI uses **Pretendard** (SIL Open Font License 1.1), self-hosted under `assets/fonts/` and `web-public/fonts/`. License: `licenses/OFL-Pretendard.txt`. No third-party font CDNs.
 
-## 기술
+## OAuth / push next steps
 
-- Expo SDK 58 · Expo Router · TypeScript
-- Zustand + AsyncStorage (프로필/콘텐츠) · SecureStore (자격 증명 다이제스트; 웹은 localStorage 폴백)
-- 날짜 규칙: `lib/kst.ts` (Asia/Seoul)
+1. Connect [Expo Apple / Google auth](https://docs.expo.dev/) and Kakao SDK keys
+2. Set `app.json` → `extra.eas.projectId`, then EAS Build
+3. For multi-device sync, replace `lib/store` persistence with a server (API + DB)
 
-## 보안 / 남은 리스크 (로컬 MVP)
+## Stack
 
-- **의도된 스텁:** 소셜 로그인(Google/카카오/Apple)은 UI에서 비활성·안내만 표시. 가짜 성공 로그인 없음.
-- **로컬 전용 인증:** 서버 세션 없음. 비밀번호 다이제스트는 기기 저장소에만 둠. 웹에서는 SecureStore 미지원이라 localStorage 폴백(동일 출처 XSS 시 노출 가능).
-- **시드 이미지:** 외부 호스트(Unsplash 등) 대신 로컬 SVG data-URI 플레이스홀더 사용. 예전 로컬 캐시에 외부 URL이 있으면 하이드레이션 시 플레이스홀더로 교체.
-- **푸시 토큰:** 메모리에만 두고 프로필 persist에서 제외.
+- Expo SDK 58 · Expo Router · TypeScript · Pretendard
+- Zustand + AsyncStorage (profile/content) · SecureStore (credential digests; web localStorage fallback)
+- Date rules: `lib/kst.ts` (Asia/Seoul)
+
+## Security / remaining risks (local MVP)
+
+- **Intentional stubs:** Social login (Google/Kakao/Apple) is disabled in UI with a notice only — no fake successful login.
+- **Local-only auth:** No server session. Password digests stay on-device. On web, SecureStore is unavailable so digests use localStorage (exposed to same-origin XSS).
+- **Seed images:** Local SVG data-URI placeholders instead of external hosts (e.g. Unsplash). Legacy cached external URLs are rewritten to placeholders on hydration.
+- **Push tokens:** Kept in memory only; excluded from profile persist.

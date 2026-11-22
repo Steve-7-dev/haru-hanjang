@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -6,15 +7,19 @@ import { ActivityIndicator, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
+import { pretendardFontFaces } from '@/constants/fonts';
 import { Colors } from '@/constants/theme';
+import { applyDefaultFont } from '@/lib/applyDefaultFont';
 import { useHaruStore } from '@/lib/store';
 import { usePushNotifications } from '@/lib/usePushNotifications';
 
 export { ErrorBoundary } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
+applyDefaultFont();
 
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts([...pretendardFontFaces]);
   const hydrated = useHaruStore((s) => s.hydrated);
   const setHydrated = useHaruStore((s) => s.setHydrated);
   const currentUserId = useHaruStore((s) => s.currentUserId);
@@ -24,27 +29,28 @@ export default function RootLayout() {
   usePushNotifications();
 
   useEffect(() => {
-    // persist may already be hydrated synchronously on web
     const unsub = useHaruStore.persist.onFinishHydration(() => setHydrated(true));
     if (useHaruStore.persist.hasHydrated()) setHydrated(true);
     return unsub;
   }, [setHydrated]);
 
   useEffect(() => {
-    if (hydrated) SplashScreen.hideAsync();
-  }, [hydrated]);
+    if (hydrated && (fontsLoaded || fontError)) {
+      SplashScreen.hideAsync();
+    }
+  }, [hydrated, fontsLoaded, fontError]);
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || (!fontsLoaded && !fontError)) return;
     const inAuth = segments[0] === '(auth)';
     if (!currentUserId && !inAuth) {
       router.replace('/(auth)/login');
     } else if (currentUserId && inAuth) {
       router.replace('/(tabs)');
     }
-  }, [hydrated, currentUserId, segments, router]);
+  }, [hydrated, fontsLoaded, fontError, currentUserId, segments, router]);
 
-  if (!hydrated) {
+  if (!hydrated || (!fontsLoaded && !fontError)) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background }}>
         <ActivityIndicator color={Colors.text} />

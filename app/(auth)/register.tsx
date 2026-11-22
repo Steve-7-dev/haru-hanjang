@@ -51,7 +51,7 @@ export default function RegisterScreen() {
     >
       <View style={styles.card}>
         <Logo size="lg" />
-        <Text style={styles.tagline}>친구들과, 하루 한 장만.</Text>
+        <Text style={styles.tagline}>Friends. One shot a day.</Text>
 
         <TextInput
           style={styles.input}
