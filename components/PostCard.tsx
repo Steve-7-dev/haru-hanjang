@@ -62,7 +62,14 @@ export function PostCard({ post }: Props) {
       </Pressable>
 
       <View style={styles.actions}>
-        <Pressable onPress={() => toggleLike(post.id)} hitSlop={8} style={styles.actionBtn}>
+        <Pressable
+          onPress={() => toggleLike(post.id)}
+          hitSlop={8}
+          style={styles.actionBtn}
+          accessibilityRole="button"
+          accessibilityLabel={liked ? '좋아요 취소' : '좋아요'}
+          accessibilityState={{ selected: liked }}
+        >
           <Ionicons
             name={liked ? 'heart' : 'heart-outline'}
             size={26}
@@ -73,6 +80,8 @@ export function PostCard({ post }: Props) {
           onPress={() => router.push(`/comments/${post.id}`)}
           hitSlop={8}
           style={styles.actionBtn}
+          accessibilityRole="button"
+          accessibilityLabel="댓글 보기"
         >
           <Ionicons name="chatbubble-outline" size={24} color={Colors.text} />
         </Pressable>

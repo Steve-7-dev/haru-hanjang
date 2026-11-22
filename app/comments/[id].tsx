@@ -6,15 +6,17 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
 
 import { useShallow } from 'zustand/react/shallow';
 
+import { AppText } from '@/components/AppText';
+import { AppTextInput } from '@/components/AppTextInput';
 import { Avatar } from '@/components/Avatar';
 import { PostCard } from '@/components/PostCard';
+import { FontFamily } from '@/constants/fonts';
+import { PopArt } from '@/constants/popArt';
 import { Colors, Spacing } from '@/constants/theme';
 import { formatKstRelative } from '@/lib/kst';
 import { useHaruStore } from '@/lib/store';
@@ -32,10 +34,15 @@ export default function CommentsScreen() {
     return (
       <View style={styles.center}>
         <Stack.Screen options={{ title: '댓글' }} />
-        <Text style={styles.muted}>게시물을 찾을 수 없어요.</Text>
+        <AppText style={styles.muted}>게시물을 찾을 수 없어요.</AppText>
       </View>
     );
   }
+
+  const onSubmit = () => {
+    const res = addComment(id, text);
+    if (res.ok) setText('');
+  };
 
   return (
     <KeyboardAvoidingView
@@ -55,32 +62,35 @@ export default function CommentsScreen() {
             <View style={styles.comment}>
               <Avatar uri={author?.avatarUri} name={author?.displayName ?? '?'} size={32} />
               <View style={{ flex: 1 }}>
-                <Text style={styles.commentBody}>
-                  <Text style={styles.username}>{author?.username} </Text>
+                <AppText style={styles.commentBody}>
+                  <AppText style={styles.username}>{author?.username} </AppText>
                   {item.text}
-                </Text>
-                <Text style={styles.time}>{formatKstRelative(item.createdAt)}</Text>
+                </AppText>
+                <AppText style={styles.time}>{formatKstRelative(item.createdAt)}</AppText>
               </View>
             </View>
           );
         }}
       />
       <View style={styles.composer}>
-        <TextInput
+        <AppTextInput
           style={styles.input}
           placeholder="댓글 달기..."
           placeholderTextColor={Colors.textSecondary}
           value={text}
           onChangeText={setText}
           maxLength={MAX_COMMENT_LEN}
+          accessibilityLabel="댓글 입력"
+          onSubmitEditing={onSubmit}
+          returnKeyType="send"
         />
         <Pressable
-          onPress={() => {
-            const res = addComment(id, text);
-            if (res.ok) setText('');
-          }}
+          onPress={onSubmit}
+          accessibilityRole="button"
+          accessibilityLabel="댓글 게시"
+          disabled={!text.trim()}
         >
-          <Text style={[styles.postBtn, !text.trim() && { opacity: 0.4 }]}>게시</Text>
+          <AppText style={[styles.postBtn, !text.trim() && { opacity: 0.4 }]}>게시</AppText>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -90,25 +100,42 @@ export default function CommentsScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  muted: { color: Colors.textSecondary },
+  muted: { fontFamily: FontFamily.sans, color: Colors.textSecondary },
   comment: {
     flexDirection: 'row',
     gap: Spacing.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
   },
-  username: { fontWeight: '600', color: Colors.text },
-  commentBody: { color: Colors.text, lineHeight: 18 },
-  time: { color: Colors.textSecondary, fontSize: 11, marginTop: 4 },
+  username: { fontFamily: FontFamily.sans, fontWeight: '600', color: Colors.text },
+  commentBody: { fontFamily: FontFamily.sans, color: Colors.text, lineHeight: 18 },
+  time: { fontFamily: FontFamily.sans, color: Colors.textSecondary, fontSize: 11, marginTop: 4 },
   composer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.border,
+    borderTopWidth: PopArt.borderWidth,
+    borderTopColor: PopArt.ink,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     gap: Spacing.sm,
+    backgroundColor: PopArt.panel,
   },
-  input: { flex: 1, paddingVertical: 10, color: Colors.text, fontSize: 14 },
-  postBtn: { color: Colors.primary, fontWeight: '700' },
+  input: {
+    flex: 1,
+    fontFamily: FontFamily.sans,
+    paddingVertical: 10,
+    paddingHorizontal: Spacing.sm,
+    color: PopArt.ink,
+    fontSize: 14,
+    borderWidth: PopArt.borderWidth,
+    borderColor: PopArt.ink,
+    borderRadius: 0,
+    backgroundColor: PopArt.panel,
+  },
+  postBtn: {
+    fontFamily: FontFamily.sans,
+    color: PopArt.ink,
+    fontWeight: '700',
+    paddingHorizontal: 8,
+  },
 });

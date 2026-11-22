@@ -4,16 +4,19 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   Alert,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { AppText } from '@/components/AppText';
+import { AppTextInput } from '@/components/AppTextInput';
+import { FontFamily } from '@/constants/fonts';
+import { PopArt } from '@/constants/popArt';
+import { Spacing } from '@/constants/theme';
 import { formatKstDayLabel, kstDayKey } from '@/lib/kst';
 import { useHaruStore } from '@/lib/store';
 import { MAX_CAPTION_LEN } from '@/lib/validation';
@@ -74,10 +77,12 @@ export default function CreateScreen() {
     const res = createOrUpdateTodayPost(imageUri, caption);
     if (!res.ok) Alert.alert('실패', res.error);
     else {
-      Alert.alert(
-        todayPost ? '수정됐어요' : '공유됐어요',
-        `${formatKstDayLabel(kstDayKey())}의 하루 한 장`,
-      );
+      if (Platform.OS !== 'web') {
+        Alert.alert(
+          todayPost ? '수정됐어요' : '공유됐어요',
+          `${formatKstDayLabel(kstDayKey())}의 하루 한 장`,
+        );
+      }
       router.push('/(tabs)');
     }
   };
@@ -105,45 +110,51 @@ export default function CreateScreen() {
       style={[styles.root, { paddingTop: insets.top }]}
       contentContainerStyle={styles.content}
     >
-      <Text style={styles.title}>{todayPost ? '오늘 사진 수정' : '새 게시물'}</Text>
-      <Text style={styles.rule}>
+      <AppText style={styles.title}>{todayPost ? '오늘 사진 수정' : '새 게시물'}</AppText>
+      <AppText style={styles.rule}>
         한국시간 기준 · 하루 한 장 · {formatKstDayLabel(kstDayKey())}
-      </Text>
+      </AppText>
 
-      <Pressable style={styles.preview} onPress={pick}>
+      <Pressable style={styles.preview} onPress={pick} accessibilityLabel="사진 미리보기">
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} contentFit="cover" />
         ) : (
-          <Text style={styles.placeholder}>사진을 선택하세요</Text>
+          <AppText style={styles.placeholder}>사진을 선택하세요</AppText>
         )}
       </Pressable>
 
       <View style={styles.row}>
-        <Pressable style={styles.secondary} onPress={pick}>
-          <Text style={styles.secondaryText}>라이브러리</Text>
+        <Pressable style={styles.secondary} onPress={pick} accessibilityRole="button">
+          <AppText style={styles.secondaryText}>라이브러리</AppText>
         </Pressable>
-        <Pressable style={styles.secondary} onPress={shoot}>
-          <Text style={styles.secondaryText}>카메라</Text>
+        <Pressable style={styles.secondary} onPress={shoot} accessibilityRole="button">
+          <AppText style={styles.secondaryText}>카메라</AppText>
         </Pressable>
       </View>
 
-      <TextInput
+      <AppTextInput
         style={styles.caption}
         placeholder="문구 입력..."
-        placeholderTextColor={Colors.textSecondary}
+        placeholderTextColor="#5C5C5C"
         multiline
         value={caption}
         onChangeText={setCaption}
         maxLength={MAX_CAPTION_LEN}
+        accessibilityLabel="캡션"
       />
 
-      <Pressable style={styles.primary} onPress={onShare}>
-        <Text style={styles.primaryText}>{todayPost ? '수정 공유' : '공유'}</Text>
+      <Pressable
+        style={styles.primary}
+        onPress={onShare}
+        accessibilityRole="button"
+        accessibilityLabel={todayPost ? '수정 공유' : '공유'}
+      >
+        <AppText style={styles.primaryText}>{todayPost ? '수정 공유' : '공유'}</AppText>
       </Pressable>
 
       {todayPost ? (
-        <Pressable style={styles.delete} onPress={onDelete}>
-          <Text style={styles.deleteText}>오늘 사진 삭제</Text>
+        <Pressable style={styles.delete} onPress={onDelete} accessibilityRole="button">
+          <AppText style={styles.deleteText}>오늘 사진 삭제</AppText>
         </Pressable>
       ) : null}
     </ScrollView>
@@ -151,51 +162,73 @@ export default function CreateScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.background },
+  root: { flex: 1, backgroundColor: PopArt.panel },
   content: { padding: Spacing.lg, paddingBottom: 48 },
-  title: { fontSize: 22, fontWeight: '700', color: Colors.text },
-  rule: { color: Colors.textSecondary, marginTop: 4, marginBottom: Spacing.lg },
+  title: {
+    fontFamily: FontFamily.sans,
+    fontSize: 22,
+    fontWeight: '700',
+    color: PopArt.ink,
+  },
+  rule: {
+    fontFamily: FontFamily.sans,
+    color: PopArt.ink,
+    marginTop: 4,
+    marginBottom: Spacing.lg,
+    fontWeight: '500',
+  },
   preview: {
     width: '100%',
     aspectRatio: 1,
-    backgroundColor: Colors.backgroundMuted,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.border,
+    backgroundColor: PopArt.panelMuted,
+    borderWidth: PopArt.borderWidth,
+    borderColor: PopArt.ink,
+    borderRadius: 0,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
   image: { width: '100%', height: '100%' },
-  placeholder: { color: Colors.textSecondary },
+  placeholder: { fontFamily: FontFamily.sans, color: '#5C5C5C' },
   row: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.md },
   secondary: {
     flex: 1,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.border,
-    borderRadius: 8,
+    borderWidth: PopArt.borderWidth,
+    borderColor: PopArt.ink,
+    borderRadius: 0,
     paddingVertical: 12,
     alignItems: 'center',
+    backgroundColor: PopArt.yellow,
   },
-  secondaryText: { fontWeight: '600', color: Colors.text },
+  secondaryText: { fontFamily: FontFamily.sans, fontWeight: '700', color: PopArt.ink },
   caption: {
+    fontFamily: FontFamily.sans,
     marginTop: Spacing.lg,
     minHeight: 80,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.border,
-    borderRadius: 8,
+    borderWidth: PopArt.borderWidth,
+    borderColor: PopArt.ink,
+    borderRadius: 0,
     padding: Spacing.md,
     textAlignVertical: 'top',
-    color: Colors.text,
+    color: PopArt.ink,
     fontSize: 15,
+    backgroundColor: PopArt.panel,
   },
   primary: {
     marginTop: Spacing.lg,
-    backgroundColor: Colors.primary,
-    borderRadius: 8,
+    backgroundColor: PopArt.ctaFill,
+    borderWidth: PopArt.borderWidth,
+    borderColor: PopArt.ink,
+    borderRadius: 0,
     paddingVertical: 14,
     alignItems: 'center',
   },
-  primaryText: { color: Colors.textInverse, fontWeight: '700', fontSize: 15 },
+  primaryText: {
+    fontFamily: FontFamily.sans,
+    color: PopArt.ctaText,
+    fontWeight: '700',
+    fontSize: 15,
+  },
   delete: { marginTop: Spacing.md, alignItems: 'center', padding: 12 },
-  deleteText: { color: Colors.danger, fontWeight: '600' },
+  deleteText: { fontFamily: FontFamily.sans, color: '#B00020', fontWeight: '700' },
 });

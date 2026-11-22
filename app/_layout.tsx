@@ -19,7 +19,10 @@ SplashScreen.preventAutoHideAsync();
 applyDefaultFont();
 
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts([...pretendardFontFaces]);
+  const [pretendardLoaded, pretendardError] = useFonts([...pretendardFontFaces]);
+  const [iconsLoaded, iconsError] = useFonts(Ionicons.font);
+  const fontsLoaded = pretendardLoaded && iconsLoaded;
+  const fontError = pretendardError || iconsError;
   const hydrated = useHaruStore((s) => s.hydrated);
   const setHydrated = useHaruStore((s) => s.setHydrated);
   const currentUserId = useHaruStore((s) => s.currentUserId);
