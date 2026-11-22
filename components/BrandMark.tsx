@@ -5,7 +5,7 @@ type Props = { size?: number };
 
 /**
  * Original One Day One Shot mark: rounded square, six diagonal color bands,
- * large bold sunglasses + small shutter centered above the bridge. Not an Instagram logo/glyph copy.
+ * large bold sunglasses + shutter button on the right lens. Not an Instagram logo/glyph copy.
  */
 export function BrandMark({ size = 72 }: Props) {
   return (
