@@ -6,12 +6,13 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
 
+import { AppText } from '@/components/AppText';
+import { AppTextInput } from '@/components/AppTextInput';
 import { Logo } from '@/components/Logo';
+import { FontFamily } from '@/constants/fonts';
 import { Colors, Spacing } from '@/constants/theme';
 import { useHaruStore } from '@/lib/store';
 import {
@@ -51,9 +52,9 @@ export default function RegisterScreen() {
     >
       <View style={styles.card}>
         <Logo size="lg" />
-        <Text style={styles.tagline}>Friends. One shot a day.</Text>
+        <AppText style={styles.tagline}>Friends. One shot a day.</AppText>
 
-        <TextInput
+        <AppTextInput
           style={styles.input}
           placeholder="이메일"
           placeholderTextColor={Colors.textSecondary}
@@ -63,7 +64,7 @@ export default function RegisterScreen() {
           onChangeText={setEmail}
           maxLength={254}
         />
-        <TextInput
+        <AppTextInput
           style={styles.input}
           placeholder="성명"
           placeholderTextColor={Colors.textSecondary}
@@ -71,7 +72,7 @@ export default function RegisterScreen() {
           onChangeText={setDisplayName}
           maxLength={MAX_DISPLAY_NAME_LEN}
         />
-        <TextInput
+        <AppTextInput
           style={styles.input}
           placeholder="사용자 이름"
           placeholderTextColor={Colors.textSecondary}
@@ -80,7 +81,7 @@ export default function RegisterScreen() {
           onChangeText={setUsername}
           maxLength={MAX_USERNAME_LEN}
         />
-        <TextInput
+        <AppTextInput
           style={styles.input}
           placeholder="비밀번호"
           placeholderTextColor={Colors.textSecondary}
@@ -90,22 +91,22 @@ export default function RegisterScreen() {
           maxLength={MAX_PASSWORD_LEN}
         />
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <AppText style={styles.error}>{error}</AppText> : null}
 
         <Pressable
           style={[styles.primaryBtn, busy && styles.disabled]}
           onPress={onRegister}
           disabled={busy}
         >
-          <Text style={styles.primaryText}>가입</Text>
+          <AppText style={styles.primaryText}>가입</AppText>
         </Pressable>
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>계정이 있으신가요? </Text>
+        <AppText style={styles.footerText}>계정이 있으신가요? </AppText>
         <Link href="/(auth)/login" asChild>
           <Pressable>
-            <Text style={styles.link}>로그인</Text>
+            <AppText style={styles.link}>로그인</AppText>
           </Pressable>
         </Link>
       </View>
@@ -130,12 +131,15 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   tagline: {
+    fontFamily: FontFamily.sans,
     color: Colors.textSecondary,
     marginBottom: Spacing.md,
     fontSize: 15,
+    fontWeight: '400',
     textAlign: 'center',
   },
   input: {
+    fontFamily: FontFamily.sans,
     width: '100%',
     backgroundColor: Colors.inputBg,
     borderWidth: StyleSheet.hairlineWidth,
@@ -144,6 +148,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: 12,
     fontSize: 14,
+    fontWeight: '400',
     color: Colors.text,
   },
   primaryBtn: {
@@ -155,8 +160,20 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   disabled: { backgroundColor: Colors.primaryDisabled },
-  primaryText: { color: Colors.textInverse, fontWeight: '700', fontSize: 14 },
-  error: { color: Colors.heart, fontSize: 13, textAlign: 'center', marginTop: Spacing.sm },
+  primaryText: {
+    fontFamily: FontFamily.sans,
+    color: Colors.textInverse,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  error: {
+    fontFamily: FontFamily.sans,
+    color: Colors.heart,
+    fontSize: 13,
+    fontWeight: '400',
+    textAlign: 'center',
+    marginTop: Spacing.sm,
+  },
   footer: {
     marginTop: Spacing.lg,
     flexDirection: 'row',
@@ -167,6 +184,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: Spacing.lg,
   },
-  footerText: { color: Colors.textSecondary, fontSize: 14 },
-  link: { color: Colors.primary, fontWeight: '700', fontSize: 14 },
+  footerText: {
+    fontFamily: FontFamily.sans,
+    color: Colors.textSecondary,
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  link: {
+    fontFamily: FontFamily.sans,
+    color: Colors.primary,
+    fontWeight: '700',
+    fontSize: 14,
+  },
 });

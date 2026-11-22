@@ -7,7 +7,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
-import { pretendardFontFaces } from '@/constants/fonts';
+import { FontFamily, pretendardFontFaces } from '@/constants/fonts';
 import { Colors } from '@/constants/theme';
 import { applyDefaultFont } from '@/lib/applyDefaultFont';
 import { useHaruStore } from '@/lib/store';
@@ -60,7 +60,13 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack screenOptions={{ headerTintColor: Colors.text, contentStyle: { backgroundColor: Colors.background } }}>
+      <Stack
+        screenOptions={{
+          headerTintColor: Colors.text,
+          contentStyle: { backgroundColor: Colors.background },
+          headerTitleStyle: { fontFamily: FontFamily.sans, fontWeight: '600' },
+        }}
+      >
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen

@@ -6,12 +6,13 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
 
+import { AppText } from '@/components/AppText';
+import { AppTextInput } from '@/components/AppTextInput';
 import { Logo } from '@/components/Logo';
+import { FontFamily } from '@/constants/fonts';
 import { Colors, Spacing } from '@/constants/theme';
 import { useHaruStore } from '@/lib/store';
 import { MAX_PASSWORD_LEN } from '@/lib/validation';
@@ -44,9 +45,9 @@ export default function LoginScreen() {
     >
       <View style={styles.card}>
         <Logo size="lg" />
-        <Text style={styles.tagline}>One photo a day.</Text>
+        <AppText style={styles.tagline}>One photo a day.</AppText>
 
-        <TextInput
+        <AppTextInput
           style={styles.input}
           placeholder="이메일"
           placeholderTextColor={Colors.textSecondary}
@@ -57,7 +58,7 @@ export default function LoginScreen() {
           onChangeText={setEmail}
           maxLength={254}
         />
-        <TextInput
+        <AppTextInput
           style={styles.input}
           placeholder="비밀번호"
           placeholderTextColor={Colors.textSecondary}
@@ -67,31 +68,31 @@ export default function LoginScreen() {
           onChangeText={setPassword}
           maxLength={MAX_PASSWORD_LEN}
         />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <AppText style={styles.error}>{error}</AppText> : null}
 
         <Pressable
           style={[styles.primaryBtn, busy && styles.disabled]}
           onPress={onLogin}
           disabled={busy}
         >
-          <Text style={styles.primaryText}>로그인</Text>
+          <AppText style={styles.primaryText}>로그인</AppText>
         </Pressable>
 
         <View style={styles.oauthNotice}>
-          <Text style={styles.oauthNoticeText}>
+          <AppText style={styles.oauthNoticeText}>
             Google / 카카오 / Apple 로그인은 아직 연결되지 않았어요. 이메일로만 가입·로그인할 수
             있습니다.
-          </Text>
+          </AppText>
         </View>
 
-        <Text style={styles.hint}>계정이 없으면 아래에서 가입해 주세요.</Text>
+        <AppText style={styles.hint}>계정이 없으면 아래에서 가입해 주세요.</AppText>
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>계정이 없으신가요? </Text>
+        <AppText style={styles.footerText}>계정이 없으신가요? </AppText>
         <Link href="/(auth)/register" asChild>
           <Pressable>
-            <Text style={styles.link}>가입하기</Text>
+            <AppText style={styles.link}>가입하기</AppText>
           </Pressable>
         </Link>
       </View>
@@ -116,11 +117,14 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   tagline: {
+    fontFamily: FontFamily.sans,
     color: Colors.textSecondary,
     marginBottom: Spacing.md,
     fontSize: 15,
+    fontWeight: '400',
   },
   input: {
+    fontFamily: FontFamily.sans,
     width: '100%',
     backgroundColor: Colors.inputBg,
     borderWidth: StyleSheet.hairlineWidth,
@@ -129,6 +133,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: 12,
     fontSize: 14,
+    fontWeight: '400',
     color: Colors.text,
   },
   primaryBtn: {
@@ -140,7 +145,12 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   disabled: { backgroundColor: Colors.primaryDisabled },
-  primaryText: { color: Colors.textInverse, fontWeight: '700', fontSize: 14 },
+  primaryText: {
+    fontFamily: FontFamily.sans,
+    color: Colors.textInverse,
+    fontWeight: '700',
+    fontSize: 14,
+  },
   oauthNotice: {
     width: '100%',
     marginTop: Spacing.sm,
@@ -149,13 +159,30 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   oauthNoticeText: {
+    fontFamily: FontFamily.sans,
     color: Colors.textSecondary,
     fontSize: 12,
+    fontWeight: '400',
     lineHeight: 18,
     textAlign: 'center',
   },
-  hint: { marginTop: Spacing.sm, color: Colors.textSecondary, fontSize: 12, textAlign: 'center' },
-  error: { color: Colors.heart, fontSize: 13, textAlign: 'center', marginTop: 4, width: '100%' },
+  hint: {
+    fontFamily: FontFamily.sans,
+    marginTop: Spacing.sm,
+    color: Colors.textSecondary,
+    fontSize: 12,
+    fontWeight: '400',
+    textAlign: 'center',
+  },
+  error: {
+    fontFamily: FontFamily.sans,
+    color: Colors.heart,
+    fontSize: 13,
+    fontWeight: '400',
+    textAlign: 'center',
+    marginTop: 4,
+    width: '100%',
+  },
   footer: {
     marginTop: Spacing.lg,
     flexDirection: 'row',
@@ -166,6 +193,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: Spacing.lg,
   },
-  footerText: { color: Colors.textSecondary, fontSize: 14 },
-  link: { color: Colors.primary, fontWeight: '700', fontSize: 14 },
+  footerText: {
+    fontFamily: FontFamily.sans,
+    color: Colors.textSecondary,
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  link: {
+    fontFamily: FontFamily.sans,
+    color: Colors.primary,
+    fontWeight: '700',
+    fontSize: 14,
+  },
 });
