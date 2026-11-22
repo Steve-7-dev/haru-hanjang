@@ -35,6 +35,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~58.0.4",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -42,8 +44,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build": "expo export --platform web && rm -rf public && mv dist public",
-    "serve:web": "npx --yes serve public"
+    "build": "expo export --platform web && node scripts/copy-pwa-assets.mjs && rm -rf public && mv dist public",
+    "serve:web": "npx --yes serve public",
+    "lint": "expo lint"
   },
   "private": true
 }
