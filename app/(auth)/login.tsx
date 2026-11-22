@@ -1,11 +1,10 @@
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Platform, Pressable, View } from 'react-native';
+import { Alert, Platform, Pressable } from 'react-native';
 
 import { AppText } from '@/components/AppText';
 import { AppTextInput } from '@/components/AppTextInput';
-import { PopArtAuthShell, popArtAuthStyles as styles } from '@/components/PopArtAuthShell';
-import { PopArtLogo } from '@/components/PopArtLogo';
+import { IgAuthShell, igAuthStyles as styles } from '@/components/IgAuthShell';
 import { useHaruStore } from '@/lib/store';
 import { MAX_PASSWORD_LEN } from '@/lib/validation';
 
@@ -31,25 +30,24 @@ export default function LoginScreen() {
   };
 
   return (
-    <PopArtAuthShell
-      footer={
+    <IgAuthShell
+      secondary={
         <>
-          <AppText style={styles.footerText}>계정이 없으신가요? </AppText>
+          <AppText style={styles.secondaryText}>계정이 없으신가요? </AppText>
           <Link href="/(auth)/register" asChild>
             <Pressable accessibilityRole="link">
-              <AppText style={styles.link}>가입하기</AppText>
+              <AppText style={styles.secondaryLink}>새 계정 만들기</AppText>
             </Pressable>
           </Link>
         </>
       }
     >
-      <PopArtLogo size="lg" />
       <AppText style={styles.tagline}>One photo a day.</AppText>
 
       <AppTextInput
         style={styles.input}
         placeholder="이메일"
-        placeholderTextColor="#5C5C5C"
+        placeholderTextColor="#8E8E8E"
         autoCapitalize="none"
         keyboardType="email-address"
         autoComplete="email"
@@ -61,7 +59,7 @@ export default function LoginScreen() {
       <AppTextInput
         style={styles.input}
         placeholder="비밀번호"
-        placeholderTextColor="#5C5C5C"
+        placeholderTextColor="#8E8E8E"
         secureTextEntry
         autoComplete="password"
         value={password}
@@ -72,23 +70,30 @@ export default function LoginScreen() {
       {error ? <AppText style={styles.error}>{error}</AppText> : null}
 
       <Pressable
-        style={[styles.primaryBtn, busy && styles.disabled]}
+        style={[styles.primaryBtn, busy && styles.primaryDisabled]}
         onPress={onLogin}
         disabled={busy}
         accessibilityRole="button"
-        accessibilityState={{ disabled: busy }}
       >
         <AppText style={styles.primaryText}>로그인</AppText>
       </Pressable>
 
-      <View style={styles.oauthNotice}>
-        <AppText style={styles.oauthNoticeText}>
-          Google / 카카오 / Apple 로그인은 아직 연결되지 않았어요. 이메일로만 가입·로그인할 수
-          있습니다.
-        </AppText>
-      </View>
+      <Pressable
+        style={[styles.primaryBtn, { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#DBDBDB' }]}
+        onPress={() => {
+          setEmail('');
+          setPassword('');
+          setError(null);
+        }}
+        accessibilityRole="button"
+        accessibilityLabel="다른 프로필 사용"
+      >
+        <AppText style={[styles.primaryText, { color: '#262626' }]}>다른 프로필 사용</AppText>
+      </Pressable>
 
-      <AppText style={styles.hint}>계정이 없으면 아래에서 가입해 주세요.</AppText>
-    </PopArtAuthShell>
+      <AppText style={styles.oauthNoticeText}>
+        Google / 카카오 / Apple 로그인은 아직 연결되지 않았어요. 이메일로만 가입·로그인할 수 있습니다.
+      </AppText>
+    </IgAuthShell>
   );
 }

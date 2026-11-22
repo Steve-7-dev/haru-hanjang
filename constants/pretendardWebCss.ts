@@ -33,20 +33,20 @@ export const PRETENDARD_WEB_CSS = `
   src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
 }
 
+/* System / SF first; Pretendard self-hosted fallback (Hangul). Never force all spans (Ionicons). */
 html, body, #root {
-  font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+  font-family: -apple-system, 'SF Pro Text', system-ui, Pretendard, sans-serif;
 }
 
-/* Form controls + placeholders (RN Web Text uses AppText / explicit styles) */
 #root input, #root textarea, #root button, #root select {
-  font-family: 'Pretendard', system-ui, -apple-system, sans-serif !important;
+  font-family: -apple-system, 'SF Pro Text', system-ui, Pretendard, sans-serif !important;
 }
 
 #root input::placeholder,
 #root textarea::placeholder,
 #root input::-webkit-input-placeholder,
 #root textarea::-webkit-input-placeholder {
-  font-family: 'Pretendard', system-ui, -apple-system, sans-serif !important;
+  font-family: -apple-system, 'SF Pro Text', system-ui, Pretendard, sans-serif !important;
 }
 
 /* Keep vector-icon glyph fonts intact when present */
