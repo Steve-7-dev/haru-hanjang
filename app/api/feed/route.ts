@@ -1,4 +1,5 @@
 import { sql } from '@/lib/server/db';
+import { formatKstDateTime } from '@/lib/server/kst';
 import { requireUser } from '@/lib/server/session';
 
 export const runtime = 'nodejs';
@@ -12,6 +13,7 @@ type FeedRow = {
   caption: string;
   created_at: string;
   updated_at: string;
+  confirmed_at: string | null;
   username: string;
   display_name: string;
   like_count: string;
@@ -25,7 +27,7 @@ export async function GET() {
 
   const rows = await sql<FeedRow>(
     `SELECT p.id, p.author_id, p.day_key, p.media_id, p.caption,
-            p.created_at::text, p.updated_at::text,
+            p.created_at::text, p.updated_at::text, p.confirmed_at::text AS confirmed_at,
             u.username, u.display_name,
             (SELECT COUNT(*)::text FROM likes l WHERE l.post_id = p.id) AS like_count,
             (SELECT COUNT(*)::text FROM comments c WHERE c.post_id = p.id) AS comment_count,
@@ -46,6 +48,9 @@ export async function GET() {
     caption: r.caption,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
+    confirmedAt: r.confirmed_at,
+    confirmed: Boolean(r.confirmed_at),
+    createdAtLabel: formatKstDateTime(r.created_at),
     author: { id: r.author_id, username: r.username, displayName: r.display_name },
     likeCount: Number(r.like_count),
     commentCount: Number(r.comment_count),
