@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/components/web/AuthProvider';
 import { AppNav } from '@/components/web/IgShell';
 import { apiGet, apiPostJson, type ApiPost } from '@/lib/client/api';
+import { formatKstDateTime } from '@/lib/client/time';
 
 export default function FeedPage() {
   const { user, loading } = useAuth();
@@ -64,7 +65,11 @@ export default function FeedPage() {
           설정
         </Link>
       </header>
-      {error ? <p className="auth-error" style={{ padding: 14 }}>{error}</p> : null}
+      {error ? (
+        <p className="auth-error" style={{ padding: 14 }}>
+          {error}
+        </p>
+      ) : null}
       <div className="feed">
         {posts.length === 0 ? (
           <p className="tagline" style={{ padding: 24 }}>
@@ -73,7 +78,15 @@ export default function FeedPage() {
         ) : (
           posts.map((p) => (
             <article key={p.id} className="post-card">
-              <div className="post-head">{p.author?.username ?? p.authorId}</div>
+              <div className="post-head" style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                <span>{p.author?.username ?? p.authorId}</span>
+                <time
+                  dateTime={p.createdAt}
+                  style={{ fontWeight: 400, color: 'var(--muted)', fontSize: 12 }}
+                >
+                  {p.createdAtLabel || formatKstDateTime(p.createdAt)}
+                </time>
+              </div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className="post-img" src={p.imageUri} alt="" />
               <div className="post-actions">
@@ -86,6 +99,9 @@ export default function FeedPage() {
                 <div className="caption">
                   <strong>{p.author?.username}</strong> {p.caption}
                 </div>
+                {p.confirmed ? (
+                  <div style={{ marginTop: 4, color: 'var(--muted)', fontSize: 12 }}>확정됨</div>
+                ) : null}
               </div>
             </article>
           ))

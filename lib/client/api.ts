@@ -18,10 +18,24 @@ export type ApiPost = {
   caption: string;
   createdAt: string;
   updatedAt: string;
+  confirmedAt?: string | null;
+  confirmed?: boolean;
+  createdAtLabel?: string;
   author?: { id: string; username: string; displayName: string };
   likeCount?: number;
   commentCount?: number;
   likedByMe?: boolean;
+};
+
+export type TodayStatus = {
+  dayKey: string;
+  locked: boolean;
+  confirmedAt: string | null;
+  post: ApiPost | null;
+  canUpload: boolean;
+  canEdit: boolean;
+  canConfirm: boolean;
+  canDelete: boolean;
 };
 
 async function parse<T>(res: Response): Promise<T> {
