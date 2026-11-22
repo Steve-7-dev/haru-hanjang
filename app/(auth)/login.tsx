@@ -18,28 +18,29 @@ import { useHaruStore } from '@/lib/store';
 export default function LoginScreen() {
   const loginEmail = useHaruStore((s) => s.loginEmail);
   const loginOAuthStub = useHaruStore((s) => s.loginOAuthStub);
-  const [email, setEmail] = useState('mina@haru.app');
-  const [password, setPassword] = useState('haru1234');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const onLogin = () => {
+  const onLogin = async () => {
     setBusy(true);
-    const res = loginEmail(email, password);
-    setBusy(false);
-    if (!res.ok) Alert.alert('로그인 실패', res.error);
-    else router.replace('/(tabs)');
+    setError(null);
+    try {
+      const res = await loginEmail(email, password);
+      if (!res.ok) {
+        setError(res.error);
+        if (Platform.OS !== 'web') Alert.alert('로그인 실패', res.error);
+      } else router.replace('/(tabs)');
+    } finally {
+      setBusy(false);
+    }
   };
 
   const onOAuth = (provider: 'google' | 'kakao' | 'apple') => {
     const res = loginOAuthStub(provider);
-    if (!res.ok) Alert.alert('오류', res.error);
-    else {
-      Alert.alert(
-        '스텁 로그인',
-        `${provider} 키를 연결하기 전 임시 계정으로 들어갑니다. 실제 OAuth는 app.json / 콘솔 설정 후 활성화하세요.`,
-      );
-      router.replace('/(tabs)');
-    }
+    setError(res.ok ? null : res.error);
+    if (Platform.OS !== 'web') Alert.alert('준비 중', res.ok ? '완료' : res.error);
   };
 
   return (
@@ -57,6 +58,7 @@ export default function LoginScreen() {
           placeholderTextColor={Colors.textSecondary}
           autoCapitalize="none"
           keyboardType="email-address"
+          autoComplete="email"
           value={email}
           onChangeText={setEmail}
         />
@@ -65,9 +67,12 @@ export default function LoginScreen() {
           placeholder="비밀번호"
           placeholderTextColor={Colors.textSecondary}
           secureTextEntry
+          autoComplete="password"
           value={password}
           onChangeText={setPassword}
         />
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
         <Pressable
           style={[styles.primaryBtn, busy && styles.disabled]}
           onPress={onLogin}
@@ -82,17 +87,23 @@ export default function LoginScreen() {
           <View style={styles.line} />
         </View>
 
-        <Pressable style={styles.oauthBtn} onPress={() => onOAuth('google')}>
-          <Text style={styles.oauthText}>Google로 계속</Text>
+        <Pressable style={[styles.oauthBtn, styles.oauthDisabled]} onPress={() => onOAuth('google')}>
+          <Text style={styles.oauthMuted}>Google로 계속 (준비 중)</Text>
         </Pressable>
-        <Pressable style={[styles.oauthBtn, styles.kakao]} onPress={() => onOAuth('kakao')}>
-          <Text style={[styles.oauthText, { color: Colors.kakaoText }]}>카카오로 계속</Text>
+        <Pressable
+          style={[styles.oauthBtn, styles.kakao, styles.oauthDisabled]}
+          onPress={() => onOAuth('kakao')}
+        >
+          <Text style={[styles.oauthMuted, { color: Colors.kakaoText }]}>카카오로 계속 (준비 중)</Text>
         </Pressable>
-        <Pressable style={[styles.oauthBtn, styles.apple]} onPress={() => onOAuth('apple')}>
-          <Text style={[styles.oauthText, { color: Colors.textInverse }]}>Apple로 계속</Text>
+        <Pressable
+          style={[styles.oauthBtn, styles.apple, styles.oauthDisabled]}
+          onPress={() => onOAuth('apple')}
+        >
+          <Text style={[styles.oauthMuted, { color: Colors.textInverse }]}>Apple로 계속 (준비 중)</Text>
         </Pressable>
 
-        <Text style={styles.hint}>데모: mina@haru.app / haru1234</Text>
+        <Text style={styles.hint}>계정이 없으면 아래에서 가입해 주세요.</Text>
       </View>
 
       <View style={styles.footer}>
@@ -167,10 +178,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.background,
   },
+  oauthDisabled: { opacity: 0.55 },
   kakao: { backgroundColor: Colors.kakao, borderColor: Colors.kakao },
   apple: { backgroundColor: Colors.apple, borderColor: Colors.apple },
-  oauthText: { fontWeight: '600', fontSize: 14, color: Colors.text },
-  hint: { marginTop: Spacing.sm, color: Colors.textSecondary, fontSize: 12 },
+  oauthMuted: { fontWeight: '600', fontSize: 14, color: Colors.text },
+  hint: { marginTop: Spacing.sm, color: Colors.textSecondary, fontSize: 12, textAlign: 'center' },
+  error: { color: Colors.heart, fontSize: 13, textAlign: 'center', marginTop: 4, width: '100%' },
   footer: {
     marginTop: Spacing.lg,
     flexDirection: 'row',

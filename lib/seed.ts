@@ -1,46 +1,46 @@
-import { hashPassword } from './id';
+import { PLACEHOLDER } from './placeholders';
 import type { AppData } from './types';
 
 const now = Date.now();
 const iso = (minsAgo: number) => new Date(now - minsAgo * 60_000).toISOString();
 
-/** Demo friends for first launch — password for all: haru1234 */
+/**
+ * Sample personas + content for first launch.
+ * Seed users have no on-device credentials — register a new account to sign in.
+ */
 export const SEED: AppData = {
   users: [
     {
       id: 'u_mina',
-      email: 'mina@haru.app',
+      email: 'mina@sample.local',
       username: 'mina',
       displayName: '미나',
       bio: '오늘의 한 장만.',
-      avatarUri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
+      avatarUri: PLACEHOLDER.avatarMina,
       isPrivate: false,
       createdAt: iso(60 * 24 * 30),
-      passwordHash: hashPassword('haru1234'),
       authProvider: 'email',
     },
     {
       id: 'u_jun',
-      email: 'jun@haru.app',
+      email: 'jun@sample.local',
       username: 'jun.park',
       displayName: '준',
       bio: '하루 한 장으로 기록 중',
-      avatarUri: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
+      avatarUri: PLACEHOLDER.avatarJun,
       isPrivate: false,
       createdAt: iso(60 * 24 * 20),
-      passwordHash: hashPassword('haru1234'),
       authProvider: 'email',
     },
     {
       id: 'u_soo',
-      email: 'soo@haru.app',
+      email: 'soo@sample.local',
       username: 'soo.kim',
       displayName: '수진',
       bio: '비공개로 친구만',
-      avatarUri: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
+      avatarUri: PLACEHOLDER.avatarSoo,
       isPrivate: true,
       createdAt: iso(60 * 24 * 10),
-      passwordHash: hashPassword('haru1234'),
       authProvider: 'email',
     },
   ],
@@ -49,7 +49,7 @@ export const SEED: AppData = {
       id: 'p_mina_1',
       authorId: 'u_mina',
       dayKey: '2026-11-20',
-      imageUri: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1080&h=1080&fit=crop',
+      imageUri: PLACEHOLDER.postCoffee,
       caption: '아침 커피. 오늘은 이 한 장이면 충분해.',
       createdAt: iso(60 * 18),
       updatedAt: iso(60 * 18),
@@ -58,7 +58,7 @@ export const SEED: AppData = {
       id: 'p_jun_1',
       authorId: 'u_jun',
       dayKey: '2026-11-20',
-      imageUri: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1080&h=1080&fit=crop',
+      imageUri: PLACEHOLDER.postSunset,
       caption: '한강 노을.',
       createdAt: iso(60 * 8),
       updatedAt: iso(60 * 8),
@@ -67,7 +67,7 @@ export const SEED: AppData = {
       id: 'p_soo_1',
       authorId: 'u_soo',
       dayKey: '2026-11-19',
-      imageUri: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1080&h=1080&fit=crop',
+      imageUri: PLACEHOLDER.postDinner,
       caption: '친구들이랑 저녁.',
       createdAt: iso(60 * 30),
       updatedAt: iso(60 * 30),
@@ -82,7 +82,7 @@ export const SEED: AppData = {
       id: 'c1',
       postId: 'p_mina_1',
       authorId: 'u_jun',
-      text: '색감 좋다 ☕️',
+      text: '색감 좋다',
       createdAt: iso(60 * 9),
     },
   ],

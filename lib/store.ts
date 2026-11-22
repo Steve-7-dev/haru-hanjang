@@ -2,7 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { createId, hashPassword } from './id';
+import { clearAllCredentials, setEmailCredential, verifyEmailCredential } from './credentials';
+import { createId } from './id';
 import { kstDayKey } from './kst';
 import { SEED } from './seed';
 import type {
@@ -15,8 +16,27 @@ import type {
   User,
   UserId,
 } from './types';
+import {
+  MAX_BIO_LEN,
+  MAX_CAPTION_LEN,
+  MAX_COMMENT_LEN,
+  MAX_DISPLAY_NAME_LEN,
+  MAX_GROUP_TITLE_LEN,
+  MAX_MESSAGE_LEN,
+  clampText,
+  isValidEmail,
+  normalizeEmail,
+  normalizeUsername,
+  validatePassword,
+  validateUsername,
+} from './validation';
 
 type AuthResult = { ok: true } | { ok: false; error: string };
+
+function stripSensitiveUser(u: User): User {
+  const { pushToken: _pushToken, ...rest } = u;
+  return rest;
+}
 
 interface HaruState extends AppData {
   currentUserId: UserId | null;
@@ -43,8 +63,9 @@ interface HaruState extends AppData {
     password: string;
     username: string;
     displayName: string;
-  }) => AuthResult;
-  loginEmail: (email: string, password: string) => AuthResult;
+  }) => Promise<AuthResult>;
+  loginEmail: (email: string, password: string) => Promise<AuthResult>;
+  /** OAuth providers are not wired — intentionally disabled for the private demo. */
   loginOAuthStub: (provider: 'google' | 'kakao' | 'apple') => AuthResult;
   logout: () => void;
 
@@ -153,67 +174,68 @@ export const useHaruStore = create<HaruState>()(
       followerCount: (userId) => get().follows.filter((f) => f.followingId === userId).length,
       followingCount: (userId) => get().follows.filter((f) => f.followerId === userId).length,
 
-      registerEmail: ({ email, password, username, displayName }) => {
-        const e = email.trim().toLowerCase();
-        const u = username.trim().toLowerCase().replace(/[^a-z0-9._]/g, '');
-        if (!e || !password || password.length < 6) {
-          return { ok: false, error: '이메일과 6자 이상 비밀번호가 필요해요.' };
-        }
-        if (u.length < 3) return { ok: false, error: '유저네임은 3자 이상이어야 해요.' };
+      registerEmail: async ({ email, password, username, displayName }) => {
+        const e = normalizeEmail(email);
+        if (!isValidEmail(e)) return { ok: false, error: '올바른 이메일을 입력해 주세요.' };
+        const pwdErr = validatePassword(password);
+        if (pwdErr) return { ok: false, error: pwdErr };
+        const uErr = validateUsername(username);
+        if (uErr) return { ok: false, error: uErr };
+        const u = normalizeUsername(username);
         if (get().users.some((x) => x.email === e)) {
           return { ok: false, error: '이미 가입된 이메일이에요.' };
         }
         if (get().users.some((x) => x.username === u)) {
           return { ok: false, error: '이미 쓰는 유저네임이에요.' };
         }
+        const name = clampText(displayName || u, MAX_DISPLAY_NAME_LEN) || u;
+        try {
+          await setEmailCredential(e, password);
+        } catch {
+          return { ok: false, error: '비밀번호를 안전하게 저장하지 못했어요. 다시 시도해 주세요.' };
+        }
         const user: User = {
           id: createId('u'),
           email: e,
           username: u,
-          displayName: displayName.trim() || u,
+          displayName: name,
           bio: '',
           avatarUri: null,
           isPrivate: false,
           createdAt: new Date().toISOString(),
-          passwordHash: hashPassword(password),
           authProvider: 'email',
         };
         set((s) => ({ users: [...s.users, user], currentUserId: user.id }));
         return { ok: true };
       },
 
-      loginEmail: (email, password) => {
-        const e = email.trim().toLowerCase();
+      loginEmail: async (email, password) => {
+        const e = normalizeEmail(email);
+        if (!isValidEmail(e) || !password) {
+          return { ok: false, error: '이메일 또는 비밀번호가 올바르지 않아요.' };
+        }
         const user = get().users.find((x) => x.email === e);
-        if (!user || user.passwordHash !== hashPassword(password)) {
+        if (!user) {
+          return { ok: false, error: '이메일 또는 비밀번호가 올바르지 않아요.' };
+        }
+        let ok = false;
+        try {
+          ok = await verifyEmailCredential(e, password);
+        } catch {
+          return { ok: false, error: '로그인 검증에 실패했어요. 다시 시도해 주세요.' };
+        }
+        if (!ok) {
           return { ok: false, error: '이메일 또는 비밀번호가 올바르지 않아요.' };
         }
         set({ currentUserId: user.id });
         return { ok: true };
       },
 
-      loginOAuthStub: (provider) => {
-        // MVP: create or reuse a demo OAuth identity so UI flow works before keys are wired.
-        const email = `${provider}@oauth.haru.app`;
-        let user = get().users.find((x) => x.email === email);
-        if (!user) {
-          user = {
-            id: createId('u'),
-            email,
-            username: `${provider}_user`,
-            displayName: provider === 'kakao' ? '카카오 유저' : provider === 'apple' ? 'Apple 유저' : 'Google 유저',
-            bio: `${provider} 로그인 (키 연결 전 스텁)`,
-            avatarUri: null,
-            isPrivate: false,
-            createdAt: new Date().toISOString(),
-            authProvider: provider,
-          };
-          set((s) => ({ users: [...s.users, user!], currentUserId: user!.id }));
-        } else {
-          set({ currentUserId: user.id });
-        }
-        return { ok: true };
-      },
+      loginOAuthStub: (_provider) => ({
+        ok: false,
+        error:
+          '소셜 로그인은 아직 연결되지 않았어요. 이메일로 가입·로그인해 주세요. (의도된 스텁)',
+      }),
 
       logout: () => set({ currentUserId: null }),
 
@@ -221,12 +243,19 @@ export const useHaruStore = create<HaruState>()(
         const me = get().currentUserId;
         if (!me) return { ok: false, error: '로그인이 필요해요.' };
         if (patch.username) {
-          const u = patch.username.trim().toLowerCase().replace(/[^a-z0-9._]/g, '');
-          if (u.length < 3) return { ok: false, error: '유저네임은 3자 이상.' };
+          const uErr = validateUsername(patch.username);
+          if (uErr) return { ok: false, error: uErr };
+          const u = normalizeUsername(patch.username);
           if (get().users.some((x) => x.username === u && x.id !== me)) {
             return { ok: false, error: '이미 쓰는 유저네임이에요.' };
           }
           patch = { ...patch, username: u };
+        }
+        if (patch.displayName != null) {
+          patch = { ...patch, displayName: clampText(patch.displayName, MAX_DISPLAY_NAME_LEN) };
+        }
+        if (patch.bio != null) {
+          patch = { ...patch, bio: clampText(patch.bio, MAX_BIO_LEN) };
         }
         set((s) => ({
           users: s.users.map((x) => (x.id === me ? { ...x, ...patch } : x)),
@@ -265,15 +294,21 @@ export const useHaruStore = create<HaruState>()(
       createOrUpdateTodayPost: (imageUri, caption) => {
         const me = get().currentUserId;
         if (!me) return { ok: false, error: '로그인이 필요해요.' };
-        if (!imageUri) return { ok: false, error: '사진을 선택해 주세요.' };
+        if (!imageUri || typeof imageUri !== 'string') {
+          return { ok: false, error: '사진을 선택해 주세요.' };
+        }
+        if (imageUri.startsWith('javascript:') || imageUri.startsWith('data:text/html')) {
+          return { ok: false, error: '지원하지 않는 이미지예요.' };
+        }
         const dayKey = kstDayKey();
         const existing = get().todayPostFor(me);
         const now = new Date().toISOString();
+        const safeCaption = clampText(caption, MAX_CAPTION_LEN);
         if (existing) {
           set((s) => ({
             posts: s.posts.map((p) =>
               p.id === existing.id
-                ? { ...p, imageUri, caption: caption.trim(), updatedAt: now }
+                ? { ...p, imageUri, caption: safeCaption, updatedAt: now }
                 : p,
             ),
           }));
@@ -284,7 +319,7 @@ export const useHaruStore = create<HaruState>()(
           authorId: me,
           dayKey,
           imageUri,
-          caption: caption.trim(),
+          caption: safeCaption,
           createdAt: now,
           updatedAt: now,
         };
@@ -337,7 +372,7 @@ export const useHaruStore = create<HaruState>()(
       addComment: (postId, text) => {
         const me = get().currentUserId;
         if (!me) return { ok: false, error: '로그인이 필요해요.' };
-        const t = text.trim();
+        const t = clampText(text, MAX_COMMENT_LEN);
         if (!t) return { ok: false, error: '댓글을 입력해 주세요.' };
         const post = get().posts.find((p) => p.id === postId);
         const comment: Comment = {
@@ -406,9 +441,9 @@ export const useHaruStore = create<HaruState>()(
       createGroup: (title, memberIds) => {
         const me = get().currentUserId;
         if (!me) return { ok: false, error: '로그인이 필요해요.' };
-        const name = title.trim();
+        const name = clampText(title, MAX_GROUP_TITLE_LEN);
         if (!name) return { ok: false, error: '그룹 이름이 필요해요.' };
-        const members = Array.from(new Set([me, ...memberIds]));
+        const members = Array.from(new Set([me, ...memberIds.filter((id) => typeof id === 'string')]));
         if (members.length < 3) return { ok: false, error: '그룹은 나 포함 3명 이상이어야 해요.' };
         const id = createId('cv');
         const now = new Date().toISOString();
@@ -431,7 +466,7 @@ export const useHaruStore = create<HaruState>()(
       sendMessage: (conversationId, text) => {
         const me = get().currentUserId;
         if (!me) return { ok: false, error: '로그인이 필요해요.' };
-        const t = text.trim();
+        const t = clampText(text, MAX_MESSAGE_LEN);
         if (!t) return { ok: false, error: '메시지를 입력해 주세요.' };
         const conv = get().conversations.find((c) => c.id === conversationId);
         if (!conv || !conv.memberIds.includes(me)) {
@@ -489,22 +524,35 @@ export const useHaruStore = create<HaruState>()(
       },
       registerPushToken: (token) => {
         const me = get().currentUserId;
-        if (!me) return;
+        if (!me || typeof token !== 'string' || token.length > 4096) return;
+        // Kept in memory only; stripped from persisted profile snapshots.
         set((s) => ({
           users: s.users.map((u) => (u.id === me ? { ...u, pushToken: token } : u)),
         }));
       },
 
-      resetDemo: () => set({ ...SEED, currentUserId: null }),
+      resetDemo: () => {
+        void clearAllCredentials();
+        set({ ...SEED, currentUserId: null });
+      },
     }),
     {
-      name: 'haru-hanjang-v1',
+      name: 'haru-hanjang-v2',
       storage: createJSONStorage(() => AsyncStorage),
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state, error) => {
+        if (state?.users) {
+          state.users = state.users.map((u) => {
+            const cleaned = stripSensitiveUser(u as User & { passwordHash?: string });
+            // Drop legacy passwordHash if present in old snapshots.
+            const { passwordHash: _legacy, ...rest } = cleaned as User & { passwordHash?: string };
+            return rest;
+          });
+        }
         state?.setHydrated(true);
+        if (error) state?.setHydrated(true);
       },
       partialize: (s) => ({
-        users: s.users,
+        users: s.users.map(stripSensitiveUser),
         posts: s.posts,
         likes: s.likes,
         comments: s.comments,

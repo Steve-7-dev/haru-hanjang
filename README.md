@@ -6,7 +6,7 @@ Instagram 오마주 iOS SNS — **한국시간(KST) 기준 하루 한 장**.
 
 ## MVP 기능
 
-- 이메일 가입/로그인 (+ Google / 카카오 / Apple **스텁** — 키 연결 전)
+- 이메일 가입/로그인 (Google / 카카오 / Apple는 **의도적으로 비활성 스텁** — 키 연결 전)
 - 팔로우 피드 + 전체(공개) 탐색
 - 팔로우 즉시 적용, 비공개 계정
 - 게시물당 **사진 1장**, 같은 날 수정/삭제 가능
@@ -22,15 +22,13 @@ npx expo start
 ```
 
 - iOS: Expo Go 또는 `npx expo run:ios` (Mac + Xcode)
-- 웹 미리보기: `npx expo start --web`
+- 웹 미리보기: `npx expo start --web` 또는 `npm run build && npm run serve:web`
 
-### 데모 계정
+### 계정
 
-| 이메일 | 비밀번호 |
-|--------|----------|
-| mina@haru.app | haru1234 |
-| jun@haru.app | haru1234 |
-| soo@haru.app | haru1234 (비공개 계정) |
+시드 페르소나는 **샘플 콘텐츠용**이며 로그인 비밀번호가 없습니다.  
+앱에서 **가입하기**로 새 이메일 계정을 만든 뒤 로그인하세요.  
+비밀번호는 기기 내 SecureStore에 PBKDF2 다이제스트로만 저장됩니다.
 
 ## OAuth / 푸시 다음 단계
 
@@ -41,5 +39,5 @@ npx expo start
 ## 기술
 
 - Expo SDK 58 · Expo Router · TypeScript
-- Zustand + AsyncStorage (로컬 MVP 저장)
+- Zustand + AsyncStorage (프로필/콘텐츠) · SecureStore (자격 증명 다이제스트)
 - 날짜 규칙: `lib/kst.ts` (Asia/Seoul)

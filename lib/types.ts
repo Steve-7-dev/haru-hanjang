@@ -13,9 +13,8 @@ export interface User {
   avatarUri: string | null;
   isPrivate: boolean;
   createdAt: string;
-  /** Password hash for email auth (local MVP). OAuth users leave empty. */
-  passwordHash?: string;
   authProvider: 'email' | 'google' | 'kakao' | 'apple';
+  /** Push tokens are kept in memory only — not persisted with profile data. */
   pushToken?: string | null;
 }
 

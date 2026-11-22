@@ -22,10 +22,21 @@ export default function RegisterScreen() {
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
 
-  const onRegister = () => {
-    const res = registerEmail({ email, password, username, displayName });
-    if (!res.ok) Alert.alert('가입 실패', res.error);
-    else router.replace('/(tabs)');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const onRegister = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await registerEmail({ email, password, username, displayName });
+      if (!res.ok) {
+        setError(res.error);
+        if (Platform.OS !== 'web') Alert.alert('가입 실패', res.error);
+      } else router.replace('/(tabs)');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -70,7 +81,13 @@ export default function RegisterScreen() {
           onChangeText={setPassword}
         />
 
-        <Pressable style={styles.primaryBtn} onPress={onRegister}>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <Pressable
+          style={[styles.primaryBtn, busy && styles.disabled]}
+          onPress={onRegister}
+          disabled={busy}
+        >
           <Text style={styles.primaryText}>가입</Text>
         </Pressable>
       </View>
@@ -128,7 +145,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: Spacing.sm,
   },
+  disabled: { backgroundColor: Colors.primaryDisabled },
   primaryText: { color: Colors.textInverse, fontWeight: '700', fontSize: 14 },
+  error: { color: Colors.heart, fontSize: 13, textAlign: 'center', marginTop: Spacing.sm },
   footer: {
     marginTop: Spacing.lg,
     flexDirection: 'row',
