@@ -578,8 +578,10 @@ export const useHaruStore = create<HaruState>()(
       name: 'haru-hanjang-v2',
       storage: createJSONStorage(() => AsyncStorage),
       onRehydrateStorage: () => (state, error) => {
-        // Drop pre-hardening local snapshots that may contain password hashes / remote seed URLs.
-        void AsyncStorage.removeItem(LEGACY_STORE_KEY);
+        // Drop pre-hardening local snapshots (browser only — AsyncStorage is unavailable in SSR export).
+        if (typeof window !== 'undefined') {
+          void AsyncStorage.removeItem(LEGACY_STORE_KEY);
+        }
         if (state?.users || state?.posts) {
           const scrubbed = scrubPersistedData(state.users ?? [], state.posts ?? []);
           state.users = scrubbed.users;
