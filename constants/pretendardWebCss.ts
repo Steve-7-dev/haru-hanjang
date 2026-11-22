@@ -1,6 +1,7 @@
 /**
- * Web-only CSS: force Pretendard (Hangul-capable) on RN Web system stacks,
- * native inputs, and placeholders. Font files are self-hosted — no CDN.
+ * Web-only CSS: Pretendard (Hangul-capable) for document + form controls.
+ * Do NOT force font-family on all #root spans/divs — that overrides Ionicons
+ * and other icon fonts used by @expo/vector-icons.
  */
 export const PRETENDARD_WEB_CSS = `
 @font-face {
@@ -33,11 +34,10 @@ export const PRETENDARD_WEB_CSS = `
 }
 
 html, body, #root {
-  font-family: 'Pretendard', system-ui, -apple-system, sans-serif !important;
+  font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
 }
 
-/* RN Web Text / TextInput often ship a system font stack via className */
-#root div, #root span, #root p, #root a, #root li, #root label,
+/* Form controls + placeholders (RN Web Text uses AppText / explicit styles) */
 #root input, #root textarea, #root button, #root select {
   font-family: 'Pretendard', system-ui, -apple-system, sans-serif !important;
 }
@@ -47,5 +47,12 @@ html, body, #root {
 #root input::-webkit-input-placeholder,
 #root textarea::-webkit-input-placeholder {
   font-family: 'Pretendard', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Keep vector-icon glyph fonts intact when present */
+#root [class*="css-"][style*="ionicons"],
+#root [style*="Ionicons"],
+#root [style*="ionicons"] {
+  font-family: ionicons, Ionicons !important;
 }
 `;
