@@ -1,57 +1,42 @@
 # One Day One Shot
 
-Instagram-homage iOS SNS — **one photo a day (KST)**.
+Instagram-homage SNS — **one photo a day (KST)**.
 
-Repo / package folder remains `haru-hanjang`. Live private URL is unchanged:
+Repo / package folder remains `haru-hanjang`. Live private URL:
 https://haru-hanjang.apps.grok.bot
 
-Too much content is the enemy — keep only the one moment that mattered today.
+## Web (published)
 
-## MVP features
-
-- Email sign-up / login (Google / Kakao / Apple are **intentionally disabled stubs** until keys are wired)
-- Follow feed + public explore
-- Instant follow, private accounts
-- **One photo per post**, editable/deletable the same day
-- Likes · comments · DM (1:1 + group)
-- Push permission / token registration hook (needs EAS projectId)
-
-## Run
+The published web app is **Next.js** with server APIs and one Cursor Postgres database.
 
 ```bash
-cd haru-hanjang
 npm install
-npx expo start
+npm run dev          # http://localhost:3000 (PGlite when DATABASE_URL unset)
+npm run typecheck
+npm run build        # next build + migrate (migrate no-ops without DATABASE_URL)
+npm run start
 ```
 
-- iOS: Expo Go or `npx expo run:ios` (Mac + Xcode)
-- Web preview: `npx expo start --web` or `npm run build && npm run serve:web`
+### Security
 
-### Accounts
+- Email signup/login with **scrypt** password hashes on the server
+- **httpOnly** session cookies (no password digests in localStorage)
+- Posts, likes, comments, profile, and media require a valid session
+- One post per user per KST day; users can only mutate their own today post
+- Images stored in Postgres (`media` table), served via `/api/media/:id`
 
-Seed personas are **sample content only** and have no login passwords.  
-Use **Sign up** in the app to create an email account, then log in.  
-Passwords are stored only as PBKDF2 digests in on-device SecureStore (web falls back to localStorage).
+### Design
+
+Keeps the PR #9 look: sunglasses brand mark, IG-like auth screens, Pretendard + system font stack.
+
+## Native (Expo)
+
+Previous Expo Router screens live under `native/app/` for a future mobile path:
+
+```bash
+npm run expo:start
+```
 
 ## Typography
 
-UI uses **Pretendard** (SIL Open Font License 1.1), self-hosted under `assets/fonts/` and `web-public/fonts/`. License: `licenses/OFL-Pretendard.txt`. No third-party font CDNs.
-
-## OAuth / push next steps
-
-1. Connect [Expo Apple / Google auth](https://docs.expo.dev/) and Kakao SDK keys
-2. Set `app.json` → `extra.eas.projectId`, then EAS Build
-3. For multi-device sync, replace `lib/store` persistence with a server (API + DB)
-
-## Stack
-
-- Expo SDK 58 · Expo Router · TypeScript · Pretendard
-- Zustand + AsyncStorage (profile/content) · SecureStore (credential digests; web localStorage fallback)
-- Date rules: `lib/kst.ts` (Asia/Seoul)
-
-## Security / remaining risks (local MVP)
-
-- **Intentional stubs:** Social login (Google/Kakao/Apple) is disabled in UI with a notice only — no fake successful login.
-- **Local-only auth:** No server session. Password digests stay on-device. On web, SecureStore is unavailable so digests use localStorage (exposed to same-origin XSS).
-- **Seed images:** Local SVG data-URI placeholders instead of external hosts (e.g. Unsplash). Legacy cached external URLs are rewritten to placeholders on hydration.
-- **Push tokens:** Kept in memory only; excluded from profile persist.
+**Pretendard** (SIL OFL 1.1), self-hosted. License: `licenses/OFL-Pretendard.txt`.
