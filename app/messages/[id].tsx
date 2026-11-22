@@ -16,6 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { Colors, Spacing } from '@/constants/theme';
 import { formatKstRelative } from '@/lib/kst';
 import { useHaruStore } from '@/lib/store';
+import { MAX_MESSAGE_LEN } from '@/lib/validation';
 
 export default function ConversationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -75,6 +76,7 @@ export default function ConversationScreen() {
           placeholderTextColor={Colors.textSecondary}
           value={text}
           onChangeText={setText}
+          maxLength={MAX_MESSAGE_LEN}
         />
         <Pressable
           onPress={() => {

@@ -18,6 +18,7 @@ import { PostCard } from '@/components/PostCard';
 import { Colors, Spacing } from '@/constants/theme';
 import { formatKstRelative } from '@/lib/kst';
 import { useHaruStore } from '@/lib/store';
+import { MAX_COMMENT_LEN } from '@/lib/validation';
 
 export default function CommentsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -71,6 +72,7 @@ export default function CommentsScreen() {
           placeholderTextColor={Colors.textSecondary}
           value={text}
           onChangeText={setText}
+          maxLength={MAX_COMMENT_LEN}
         />
         <Pressable
           onPress={() => {

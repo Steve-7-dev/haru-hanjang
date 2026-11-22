@@ -14,6 +14,11 @@ import {
 import { Logo } from '@/components/Logo';
 import { Colors, Spacing } from '@/constants/theme';
 import { useHaruStore } from '@/lib/store';
+import {
+  MAX_DISPLAY_NAME_LEN,
+  MAX_PASSWORD_LEN,
+  MAX_USERNAME_LEN,
+} from '@/lib/validation';
 
 export default function RegisterScreen() {
   const registerEmail = useHaruStore((s) => s.registerEmail);
@@ -56,6 +61,7 @@ export default function RegisterScreen() {
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
+          maxLength={254}
         />
         <TextInput
           style={styles.input}
@@ -63,6 +69,7 @@ export default function RegisterScreen() {
           placeholderTextColor={Colors.textSecondary}
           value={displayName}
           onChangeText={setDisplayName}
+          maxLength={MAX_DISPLAY_NAME_LEN}
         />
         <TextInput
           style={styles.input}
@@ -71,6 +78,7 @@ export default function RegisterScreen() {
           autoCapitalize="none"
           value={username}
           onChangeText={setUsername}
+          maxLength={MAX_USERNAME_LEN}
         />
         <TextInput
           style={styles.input}
@@ -79,6 +87,7 @@ export default function RegisterScreen() {
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          maxLength={MAX_PASSWORD_LEN}
         />
 
         {error ? <Text style={styles.error}>{error}</Text> : null}

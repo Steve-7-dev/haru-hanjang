@@ -13,6 +13,7 @@ import {
 import { Avatar } from '@/components/Avatar';
 import { Colors, Spacing } from '@/constants/theme';
 import { useHaruStore } from '@/lib/store';
+import { MAX_GROUP_TITLE_LEN } from '@/lib/validation';
 
 export default function NewGroupScreen() {
   const me = useHaruStore((s) => s.currentUserId);
@@ -51,6 +52,7 @@ export default function NewGroupScreen() {
         placeholderTextColor={Colors.textSecondary}
         value={title}
         onChangeText={setTitle}
+        maxLength={MAX_GROUP_TITLE_LEN}
       />
       <Text style={styles.hint}>멤버 선택 (나 포함 3명 이상)</Text>
       <FlatList

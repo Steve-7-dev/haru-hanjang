@@ -10,6 +10,7 @@ export const MAX_CAPTION_LEN = 2200;
 export const MAX_COMMENT_LEN = 500;
 export const MAX_MESSAGE_LEN = 1000;
 export const MAX_GROUP_TITLE_LEN = 40;
+export const MAX_SEARCH_LEN = 64;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

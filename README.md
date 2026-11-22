@@ -39,5 +39,12 @@ npx expo start
 ## 기술
 
 - Expo SDK 58 · Expo Router · TypeScript
-- Zustand + AsyncStorage (프로필/콘텐츠) · SecureStore (자격 증명 다이제스트)
+- Zustand + AsyncStorage (프로필/콘텐츠) · SecureStore (자격 증명 다이제스트; 웹은 localStorage 폴백)
 - 날짜 규칙: `lib/kst.ts` (Asia/Seoul)
+
+## 보안 / 남은 리스크 (로컬 MVP)
+
+- **의도된 스텁:** 소셜 로그인(Google/카카오/Apple)은 UI에서 비활성·안내만 표시. 가짜 성공 로그인 없음.
+- **로컬 전용 인증:** 서버 세션 없음. 비밀번호 다이제스트는 기기 저장소에만 둠. 웹에서는 SecureStore 미지원이라 localStorage 폴백(동일 출처 XSS 시 노출 가능).
+- **시드 이미지:** 외부 호스트(Unsplash 등) 대신 로컬 SVG data-URI 플레이스홀더 사용. 예전 로컬 캐시에 외부 URL이 있으면 하이드레이션 시 플레이스홀더로 교체.
+- **푸시 토큰:** 메모리에만 두고 프로필 persist에서 제외.

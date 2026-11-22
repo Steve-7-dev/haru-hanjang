@@ -14,10 +14,10 @@ import {
 import { Logo } from '@/components/Logo';
 import { Colors, Spacing } from '@/constants/theme';
 import { useHaruStore } from '@/lib/store';
+import { MAX_PASSWORD_LEN } from '@/lib/validation';
 
 export default function LoginScreen() {
   const loginEmail = useHaruStore((s) => s.loginEmail);
-  const loginOAuthStub = useHaruStore((s) => s.loginOAuthStub);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -35,12 +35,6 @@ export default function LoginScreen() {
     } finally {
       setBusy(false);
     }
-  };
-
-  const onOAuth = (provider: 'google' | 'kakao' | 'apple') => {
-    const res = loginOAuthStub(provider);
-    setError(res.ok ? null : res.error);
-    if (Platform.OS !== 'web') Alert.alert('준비 중', res.ok ? '완료' : res.error);
   };
 
   return (
@@ -61,6 +55,7 @@ export default function LoginScreen() {
           autoComplete="email"
           value={email}
           onChangeText={setEmail}
+          maxLength={254}
         />
         <TextInput
           style={styles.input}
@@ -70,6 +65,7 @@ export default function LoginScreen() {
           autoComplete="password"
           value={password}
           onChangeText={setPassword}
+          maxLength={MAX_PASSWORD_LEN}
         />
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -81,27 +77,12 @@ export default function LoginScreen() {
           <Text style={styles.primaryText}>로그인</Text>
         </Pressable>
 
-        <View style={styles.dividerRow}>
-          <View style={styles.line} />
-          <Text style={styles.or}>또는</Text>
-          <View style={styles.line} />
+        <View style={styles.oauthNotice}>
+          <Text style={styles.oauthNoticeText}>
+            Google / 카카오 / Apple 로그인은 아직 연결되지 않았어요. 이메일로만 가입·로그인할 수
+            있습니다.
+          </Text>
         </View>
-
-        <Pressable style={[styles.oauthBtn, styles.oauthDisabled]} onPress={() => onOAuth('google')}>
-          <Text style={styles.oauthMuted}>Google로 계속 (준비 중)</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.oauthBtn, styles.kakao, styles.oauthDisabled]}
-          onPress={() => onOAuth('kakao')}
-        >
-          <Text style={[styles.oauthMuted, { color: Colors.kakaoText }]}>카카오로 계속 (준비 중)</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.oauthBtn, styles.apple, styles.oauthDisabled]}
-          onPress={() => onOAuth('apple')}
-        >
-          <Text style={[styles.oauthMuted, { color: Colors.textInverse }]}>Apple로 계속 (준비 중)</Text>
-        </Pressable>
 
         <Text style={styles.hint}>계정이 없으면 아래에서 가입해 주세요.</Text>
       </View>
@@ -160,28 +141,19 @@ const styles = StyleSheet.create({
   },
   disabled: { backgroundColor: Colors.primaryDisabled },
   primaryText: { color: Colors.textInverse, fontWeight: '700', fontSize: 14 },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  oauthNotice: {
     width: '100%',
-    marginVertical: Spacing.sm,
-    gap: Spacing.sm,
-  },
-  line: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: Colors.border },
-  or: { color: Colors.textSecondary, fontWeight: '600', fontSize: 12 },
-  oauthBtn: {
-    width: '100%',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.googleBorder,
+    marginTop: Spacing.sm,
+    padding: Spacing.md,
+    backgroundColor: Colors.backgroundMuted,
     borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-    backgroundColor: Colors.background,
   },
-  oauthDisabled: { opacity: 0.55 },
-  kakao: { backgroundColor: Colors.kakao, borderColor: Colors.kakao },
-  apple: { backgroundColor: Colors.apple, borderColor: Colors.apple },
-  oauthMuted: { fontWeight: '600', fontSize: 14, color: Colors.text },
+  oauthNoticeText: {
+    color: Colors.textSecondary,
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
   hint: { marginTop: Spacing.sm, color: Colors.textSecondary, fontSize: 12, textAlign: 'center' },
   error: { color: Colors.heart, fontSize: 13, textAlign: 'center', marginTop: 4, width: '100%' },
   footer: {

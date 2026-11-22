@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing } from '@/constants/theme';
 import { formatKstDayLabel, kstDayKey } from '@/lib/kst';
 import { useHaruStore } from '@/lib/store';
+import { MAX_CAPTION_LEN } from '@/lib/validation';
 
 export default function CreateScreen() {
   const insets = useSafeAreaInsets();
@@ -133,6 +134,7 @@ export default function CreateScreen() {
         multiline
         value={caption}
         onChangeText={setCaption}
+        maxLength={MAX_CAPTION_LEN}
       />
 
       <Pressable style={styles.primary} onPress={onShare}>

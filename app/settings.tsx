@@ -15,6 +15,11 @@ import {
 import { Avatar } from '@/components/Avatar';
 import { Colors, Spacing } from '@/constants/theme';
 import { useHaruStore } from '@/lib/store';
+import {
+  MAX_BIO_LEN,
+  MAX_DISPLAY_NAME_LEN,
+  MAX_USERNAME_LEN,
+} from '@/lib/validation';
 
 export default function SettingsScreen() {
   const me = useHaruStore((s) => s.me());
@@ -67,13 +72,19 @@ export default function SettingsScreen() {
       </Pressable>
 
       <Label>이름</Label>
-      <TextInput style={styles.input} value={displayName} onChangeText={setDisplayName} />
+      <TextInput
+        style={styles.input}
+        value={displayName}
+        onChangeText={setDisplayName}
+        maxLength={MAX_DISPLAY_NAME_LEN}
+      />
       <Label>사용자 이름</Label>
       <TextInput
         style={styles.input}
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
+        maxLength={MAX_USERNAME_LEN}
       />
       <Label>소개</Label>
       <TextInput
@@ -81,6 +92,7 @@ export default function SettingsScreen() {
         value={bio}
         onChangeText={setBio}
         multiline
+        maxLength={MAX_BIO_LEN}
       />
 
       <View style={styles.switchRow}>

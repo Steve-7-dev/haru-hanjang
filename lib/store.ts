@@ -5,6 +5,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { clearAllCredentials, setEmailCredential, verifyEmailCredential } from './credentials';
 import { createId } from './id';
 import { kstDayKey } from './kst';
+import { PLACEHOLDER } from './placeholders';
 import { SEED } from './seed';
 import type {
   AppData,
@@ -33,9 +34,43 @@ import {
 
 type AuthResult = { ok: true } | { ok: false; error: string };
 
+const LEGACY_STORE_KEY = 'haru-hanjang-v1';
+
 function stripSensitiveUser(u: User): User {
   const { pushToken: _pushToken, ...rest } = u;
   return rest;
+}
+
+function isThirdPartyImageHost(uri: string | null | undefined): boolean {
+  if (!uri) return false;
+  return /images\.unsplash\.com|unsplash\.com/i.test(uri);
+}
+
+function scrubPersistedData(users: User[], posts: Post[]): { users: User[]; posts: Post[] } {
+  const avatarFallback: Record<string, string> = {
+    u_mina: PLACEHOLDER.avatarMina,
+    u_jun: PLACEHOLDER.avatarJun,
+    u_soo: PLACEHOLDER.avatarSoo,
+  };
+  const postFallback: Record<string, string> = {
+    p_mina_1: PLACEHOLDER.postCoffee,
+    p_jun_1: PLACEHOLDER.postSunset,
+    p_soo_1: PLACEHOLDER.postDinner,
+  };
+  return {
+    users: users.map((u) => {
+      const cleaned = stripSensitiveUser(u as User & { passwordHash?: string });
+      const { passwordHash: _legacy, ...rest } = cleaned as User & { passwordHash?: string };
+      if (isThirdPartyImageHost(rest.avatarUri)) {
+        return { ...rest, avatarUri: avatarFallback[rest.id] ?? PLACEHOLDER.avatarMina };
+      }
+      return rest;
+    }),
+    posts: posts.map((p) => {
+      if (!isThirdPartyImageHost(p.imageUri)) return p;
+      return { ...p, imageUri: postFallback[p.id] ?? PLACEHOLDER.postCoffee };
+    }),
+  };
 }
 
 interface HaruState extends AppData {
@@ -65,7 +100,10 @@ interface HaruState extends AppData {
     displayName: string;
   }) => Promise<AuthResult>;
   loginEmail: (email: string, password: string) => Promise<AuthResult>;
-  /** OAuth providers are not wired — intentionally disabled for the private demo. */
+  /**
+   * OAuth providers are not wired. Kept as an explicit hard-fail so callers cannot
+   * accidentally treat a stub as a successful provider login.
+   */
   loginOAuthStub: (provider: 'google' | 'kakao' | 'apple') => AuthResult;
   logout: () => void;
 
@@ -540,13 +578,12 @@ export const useHaruStore = create<HaruState>()(
       name: 'haru-hanjang-v2',
       storage: createJSONStorage(() => AsyncStorage),
       onRehydrateStorage: () => (state, error) => {
-        if (state?.users) {
-          state.users = state.users.map((u) => {
-            const cleaned = stripSensitiveUser(u as User & { passwordHash?: string });
-            // Drop legacy passwordHash if present in old snapshots.
-            const { passwordHash: _legacy, ...rest } = cleaned as User & { passwordHash?: string };
-            return rest;
-          });
+        // Drop pre-hardening local snapshots that may contain password hashes / remote seed URLs.
+        void AsyncStorage.removeItem(LEGACY_STORE_KEY);
+        if (state?.users || state?.posts) {
+          const scrubbed = scrubPersistedData(state.users ?? [], state.posts ?? []);
+          state.users = scrubbed.users;
+          state.posts = scrubbed.posts;
         }
         state?.setHydrated(true);
         if (error) state?.setHydrated(true);

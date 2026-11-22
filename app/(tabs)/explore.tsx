@@ -16,6 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { Avatar } from '@/components/Avatar';
 import { Colors, Spacing } from '@/constants/theme';
 import { useHaruStore } from '@/lib/store';
+import { MAX_SEARCH_LEN } from '@/lib/validation';
 
 const COL = 3;
 const GAP = 2;
@@ -51,6 +52,7 @@ export default function ExploreScreen() {
           value={q}
           onChangeText={setQ}
           autoCapitalize="none"
+          maxLength={MAX_SEARCH_LEN}
         />
       </View>
 
