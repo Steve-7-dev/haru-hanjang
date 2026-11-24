@@ -22,3 +22,17 @@ export function formatKstDayHeader(dayKey: string): string {
   if (!y || !m || !d) return dayKey;
   return `${y}.${m}.${d}`;
 }
+
+/** "11월 24일" from day_key YYYY-MM-DD */
+export function formatKstMonthDay(dayKey: string): string {
+  const [, m, d] = dayKey.split('-');
+  if (!m || !d) return dayKey;
+  return `${Number(m)}월 ${Number(d)}일`;
+}
+
+/** Caption subtitle for lookback: date only, or "11월 24일, caption". */
+export function formatLookbackSubtitle(dayKey: string, caption: string): string {
+  const datePart = formatKstMonthDay(dayKey);
+  const line = caption.trim();
+  return line ? `${datePart}, ${line}` : datePart;
+}

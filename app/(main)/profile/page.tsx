@@ -88,6 +88,14 @@ export default function ProfilePage() {
         <p className="tagline" style={{ textAlign: 'left' }}>
           오늘 게시 {hasToday ? '완료' : '아직 없음'} · 총 {totalCount}장
         </p>
+        <button
+          type="button"
+          className="auth-btn lookback-entry"
+          data-testid="lookback-entry"
+          onClick={() => router.push('/lookback')}
+        >
+          되돌아보기
+        </button>
         {error ? <p className="auth-error">{error}</p> : null}
 
         <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 20 }}>

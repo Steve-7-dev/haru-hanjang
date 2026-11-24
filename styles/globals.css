@@ -294,3 +294,188 @@ textarea {
   object-fit: cover;
   background: #eee;
 }
+
+/* —— Lookback (Ken Burns slideshow) —— */
+.lookback-entry {
+  margin-top: 12px;
+}
+
+.lookback-back {
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px 8px 4px 0;
+  color: var(--ink);
+}
+
+.lookback-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  object-fit: cover;
+}
+
+.lookback-page {
+  padding-top: 12px;
+}
+
+.lookback-periods {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.lookback-period {
+  flex: 1;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lookback-period.active {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: #fff;
+}
+
+.lookback-stage {
+  margin-top: 4px;
+}
+
+.lookback-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111;
+}
+
+.lookback-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform, opacity;
+}
+
+.lookback-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.05) 42%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.lookback-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18px 16px 20px;
+  z-index: 2;
+}
+
+.lookback-caption p {
+  margin: 0;
+  color: #fff;
+  font-family: Pretendard, var(--font);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.lookback-controls {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.lookback-ctl {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.lookback-ctl.primary {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.lookback-progress {
+  margin-top: 10px;
+}
+
+.lookback-empty {
+  padding: 48px 12px;
+  text-align: center;
+}
+
+@keyframes lookbackKenA {
+  from {
+    transform: scale(1) translate(0%, 0%);
+  }
+  to {
+    transform: scale(1.12) translate(-2.5%, -1.5%);
+  }
+}
+
+@keyframes lookbackKenB {
+  from {
+    transform: scale(1.08) translate(2%, 1%);
+  }
+  to {
+    transform: scale(1) translate(-1%, 0%);
+  }
+}
+
+@keyframes lookbackFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lookbackFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.lookback-ken-a {
+  animation:
+    lookbackKenA 5.5s linear forwards,
+    lookbackFadeIn 0.9s ease-out forwards;
+}
+
+.lookback-ken-b {
+  animation:
+    lookbackKenB 5.5s linear forwards,
+    lookbackFadeIn 0.9s ease-out forwards;
+}
+
+.lookback-fade-out {
+  animation: lookbackFadeOut 0.9s ease-in forwards;
+}
