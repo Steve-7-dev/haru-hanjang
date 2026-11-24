@@ -177,9 +177,11 @@ export default function CreatePage() {
             <textarea
               className="auth-input"
               style={{ marginTop: 12, minHeight: 80, resize: 'vertical' }}
-              placeholder="캡션"
+              placeholder="한 줄 설명 (되돌아보기 자막)"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
+              disabled={busy}
+              maxLength={2200}
             />
             <button
               className="auth-btn"
